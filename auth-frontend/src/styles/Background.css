@@ -1,0 +1,60 @@
+/* Full-page background */
+.background-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: url("../assets/gym3.jpg") no-repeat center center/cover;
+}
+
+/* Dark overlay to improve text visibility */
+.overlay {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+    /* Main title */
+    .overlay h1 {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    /* Description */
+    .overlay p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin-bottom: 20px;
+    }
+
+    /* List of features */
+    .overlay ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .overlay li {
+        font-size: 1.1rem;
+        margin: 5px 0;
+    }
+
+/* Image gallery */
+.image-gallery {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+    .image-gallery img {
+        width: 200px;
+        height: 150px;
+        object-fit: fill;
+        border-radius: 10px;
+    }
