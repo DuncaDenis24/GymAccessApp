@@ -1,5 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-
+﻿using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +10,12 @@ builder.Services.AddControllers();
 // Enable CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        builder =>
+    options.AddPolicy("AllowFrontend",
+        policy =>
         {
-            builder.WithOrigins("http://localhost:3000") // Allow requests from React app
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+            policy.WithOrigins("http://localhost:3000") // Allow frontend origin
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
         });
 });
 
@@ -33,8 +32,10 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection(); // Optional, if you want to enforce HTTPS
-app.UseCors("AllowReactApp"); // Use the CORS policy
+// Use the CORS policy specifically defined
+app.UseCors("AllowFrontend");
+
+// app.UseHttpsRedirection(); // Optional, if you want to enforce HTTPS
 app.UseAuthorization();
 app.MapControllers();
 
