@@ -13,6 +13,7 @@ namespace AuthAPI.Migrations
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
+
                 {
                     Id = table.Column<int>(type: "int", nullable: true)
                         .Annotation("SqlServer:Identity", "1, 1"),
