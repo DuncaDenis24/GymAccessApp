@@ -1,8 +1,11 @@
 ﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // <-- Add this
 import "../styles/Login.css";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
+    const navigate = useNavigate(); // <-- Hook for navigation
+
     const [isTabActive, setIsTabActive] = useState(true);
     const [isSignUp, setIsSignUp] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -52,12 +55,24 @@ const Login = () => {
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify(isAdmin ? { email, password, adminCode, isAdmin } : { email, password })
             });
+
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || "Login failed");
 
             // Handle success
             alert("Login successful! You are logged in.");
             localStorage.setItem("token", data.token);
+
+            const userData = {
+                name: data.name,
+                email: data.email,
+                membershipType: data.membershipType || "Basic", // fallback if undefined
+                profilePicture: data.profilePicture,
+                joinDate: data.joinDate || new Date().toISOString()
+            };
+
+            onLoginSuccess(userData);     // <-- Tell App.js the user is logged in
+            navigate("/profile");         // <-- Redirect to profile
             resetForm();
         } catch (error) {
             if (error.message.includes("Emailul nu a fost găsit")) {
@@ -113,8 +128,7 @@ const Login = () => {
                     {isSignUp
                         ? (isAdmin ? "Admin Sign Up" : "User Sign Up")
                         : (isAdmin ? "Admin Login" : "User Login")}
-                </h2>
-</button>
+                </h2></button>
             </form>
             <p onClick={() => setIsSignUp(!isSignUp)} className="toggle-text">
                 {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign up"}
@@ -129,9 +143,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
-
-
-

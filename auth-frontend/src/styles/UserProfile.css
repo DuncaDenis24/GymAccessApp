@@ -16,6 +16,11 @@
     padding-bottom: 1rem;
 }
 
+    .profile-header h1 {
+        font-size: 2rem;
+        color: #333;
+    }
+
 .profile-content {
     display: flex;
     flex-direction: column;
@@ -48,12 +53,18 @@
     .profile-details h2 {
         margin: 0.5rem 0;
         color: #333;
+        font-size: 1.5rem;
     }
 
     .profile-details p {
         margin: 0.5rem 0;
         color: #666;
+        font-size: 1.1rem;
     }
+
+        .profile-details p strong {
+            color: #333;
+        }
 
 .form-group {
     display: flex;
@@ -66,11 +77,13 @@
         color: #555;
     }
 
-    .form-group input, .form-group select {
+    .form-group input,
+    .form-group select {
         padding: 0.75rem;
         border: 1px solid #ddd;
         border-radius: 5px;
         font-size: 1rem;
+        width: 100%;
     }
 
 .form-actions {
@@ -123,4 +136,37 @@ button {
 
     .cancel-btn:hover {
         background-color: #ddd;
+    }
+
+/* Additional style to make sure the form fits well */
+.profile-edit-form {
+    width: 100%;
+}
+
+    .profile-edit-form .form-group {
+        max-width: 100%;
+    }
+
+.profile-view,
+.profile-edit-form {
+    margin: 0 auto;
+}
+
+.profile-details p strong {
+    color: #333;
+    font-weight: bold;
+}
+
+.profile-header button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    background-color: #f44336;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+    .profile-header button:hover {
+        background-color: #d32f2f;
     }
