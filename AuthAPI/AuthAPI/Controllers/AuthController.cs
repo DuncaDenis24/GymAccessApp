@@ -11,106 +11,14 @@ using AuthAPI.Models.DTOs;
 public class AuthController : ControllerBase
 {
     private readonly DataContext _context;
+    private const string AdminSecretCode = "1234"; // Replace with actual secure method
 
     public AuthController(DataContext context)
     {
         _context = context;
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register(User user)
-    {
-        try
-        {
-            // Check if the username already exists
-            if (await _context.Users.AnyAsync(u => u.Name == user.Name))
-            {
-                return BadRequest(new { message = "Username already exists" });
-            }
-
-            // Hash the password
-            using (var hmac = new HMACSHA512())
-            {
-                user.Password = Convert.ToBase64String(hmac.Key) + ":" + Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(user.Password)));
-            }
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "User  created successfully" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "Internal server error: " + ex.Message });
-        }
-    }
-    // Login
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-    {
-        
-        try
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-
-            if (user == null)
-            {
-                return BadRequest(new { message = "User not found. Please check your email." });
-            }
-
-            bool isPasswordValid;
-            try
-            {
-                var parts = user.Password.Split(':');
-                var storedHash = Convert.FromBase64String(parts[1]);
-                using (var hmac = new HMACSHA512(Convert.FromBase64String(parts[0])))
-                {
-                    var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-                    if (!computedHash.SequenceEqual(storedHash)) return Unauthorized("Invalid password");
-                }
-                isPasswordValid = true;
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Password verification error", error = ex.Message });
-            }
-
-            if (!isPasswordValid)
-            {
-                return BadRequest(new { message = "Invalid password. Please try again." });
-            }
-           
-
-            return Ok(new { message = "Login successful!", token = "your_generated_jwt_token" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "An unexpected error occurred.", error = ex.Message });
-        }
-    }
-}
-  
-/*
-using AuthAPI.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using AuthAPI.Models.DTOs;
-
-[Route("api/auth")]
-[ApiController]
-public class AuthController : ControllerBase
-{
-    private readonly DataContext _context;
-    private const string AdminSecretCode = "SECRET_ADMIN_CODE"; // Replace with actual secure method
-
-    public AuthController(DataContext context)
-    {
-        _context = context;
-    }
-
-    [HttpPost("register")]
+    [HttpPost("register-admin")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
         try
@@ -135,7 +43,7 @@ public class AuthController : ControllerBase
                     Email = registerDto.Email,
                     Phone = registerDto.Phone,
                     Password = Convert.ToBase64String(hmac.Key) + ":" + Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password))),
-                    IsAdmin = registerDto.IsAdmin
+                    IsAdmin = true
                 };
 
                 _context.Users.Add(user);
@@ -149,6 +57,39 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
+    {
+        try
+        {
+            if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
+            {
+                return BadRequest(new { message = "Email already exists" });
+            }
+
+            using (var hmac = new HMACSHA512())
+            {
+                var user = new User
+                {
+                    Name = registerDto.Name,
+                    Surname = registerDto.Surname,
+                    Email = registerDto.Email,
+                    Phone = registerDto.Phone,
+                    Password = Convert.ToBase64String(hmac.Key) + ":" + Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password))),
+                    IsAdmin = false // utilizator obișnuit
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "User created successfully" });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Internal server error: " + ex.Message });
+        }
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
@@ -157,7 +98,7 @@ public class AuthController : ControllerBase
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user == null)
             {
-                return BadRequest(new { message = "User not found. Please check your email." });
+                return BadRequest(new { message = "Emailul nu a fost găsit." });
             }
 
             var parts = user.Password.Split(':');
@@ -165,25 +106,39 @@ public class AuthController : ControllerBase
             using (var hmac = new HMACSHA512(Convert.FromBase64String(parts[0])))
             {
                 var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-                if (!computedHash.SequenceEqual(storedHash)) return Unauthorized(new { message = "Invalid password." });
+                if (!computedHash.SequenceEqual(storedHash))
+                {
+                    return Unauthorized(new { message = "Parola este incorectă." });
+                }
             }
 
-            // Ensure admin login requires the admin code
-            if (user.IsAdmin && loginDto.AdminCode != AdminSecretCode)
+            // Dacă userul nu este admin, dar încearcă să se logheze ca admin
+            if (!user.IsAdmin && loginDto.IsAdmin == true)
             {
-                return Unauthorized(new { message = "Invalid admin code" });
+                return Unauthorized(new { message = "Acest utilizator nu este administrator." });
             }
 
-            return Ok(new { message = "Login successful!", token = "your_generated_jwt_token", isAdmin = user.IsAdmin });
+            // Dacă e admin, dar codul e greșit
+            if (user.IsAdmin && loginDto.IsAdmin == true && loginDto.AdminCode != AdminSecretCode)
+            {
+                return Unauthorized(new { message = "Codul de administrator este incorect." });
+            }
+
+            return Ok(new
+            {
+                message = "Autentificare reușită!",
+                token = "your_generated_jwt_token", // You should generate a real JWT token here
+                isAdmin = user.IsAdmin
+            });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An unexpected error occurred.", error = ex.Message });
+            return StatusCode(500, new { message = "A apărut o eroare neașteptată.", error = ex.Message });
         }
     }
+
 }
 
-*/
 
 
 
