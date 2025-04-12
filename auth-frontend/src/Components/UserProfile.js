@@ -1,34 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Profiler } from 'react';
+import axios from 'axios';
 import "../styles/UserProfile.css";
+import profilePicture from "../assets/ProfilePic.jpg"; // Default profile picture
 
-
-const UserProfile = ({ user, onLogout, onUpdateProfile }) => {
+const UserProfile = ({ onLogout, onUpdateProfile }) => {
+    const [user, setUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-        name: user.name,
-        email: user.email,
-        membershipType: user.membershipType,
-        profilePicture: user.profilePicture
+        name: '',
+        surname: '',
+        email: '',
+        phone: '',
+       membershipType: '',
+        profilePicture: '',
+        joinDate: ''
     });
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const userId = localStorage.getItem("userId"); // or token
+                const res = await axios.get(`http://localhost:5017/api/user/get/${userId}`);
+                const data = res.data;
+
+                setUser(data);
+                setFormData({
+                    name: data.name,
+                    surname: data.surname,
+                    email: data.email,
+                    phone: data.phone,
+                    membershipType: data.membershipType || 'None',
+                    profilePicture: data.photo || profilePicture,
+                    joinDate: data.joinDate ? data.joinDate.split('T')[0] : ''
+                });
+            } catch (err) {
+                console.error("Failed to fetch user data", err);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onUpdateProfile(formData);
-        setIsEditing(false);
+        try {
+            const userId = localStorage.getItem("userId");
+
+            // Map fields properly to match DTO
+            const updatedData = {
+                name: formData.name,
+                surname: formData.surname,
+                email: formData.email,
+                phone: formData.phone,
+                photo: formData.profilePicture // backend expects 'photo'
+            };
+
+            await axios.put(`http://localhost:5017/api/user/update/${userId}`, updatedData);
+
+            setUser(prev => ({ ...prev, ...updatedData }));
+            onUpdateProfile(updatedData);
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Failed to update user profile", error);
+        }
     };
+
+
+    if (!user) return <p>Loading profile...</p>;
 
     return (
         <div className="profile-container">
             <div className="profile-header">
                 <h1>My Gym Profile</h1>
-                <button onClick={onLogout} className="logout-btn">
-                    Logout
-                </button>
+                <button onClick={onLogout} className="logout-btn">Logout</button>
             </div>
 
             <div className="profile-content">
@@ -36,28 +85,23 @@ const UserProfile = ({ user, onLogout, onUpdateProfile }) => {
                     <div className="profile-view">
                         <div className="avatar-section">
                             <img
-                                src={user.profilePicture || 'https://via.placeholder.com/150'}
+                                src={formData.profilePicture || 'Select Image'}
                                 alt="Profile"
                                 className="profile-avatar"
                             />
                         </div>
                         <div className="profile-details">
-                            <h2>{user.name}</h2>
-                            <p><strong>Email:</strong> {user.email}</p>
-                            <p><strong>Membership:</strong> {user.membershipType}</p>
-                            <p><strong>Member Since:</strong> {new Date(user.joinDate).toLocaleDateString()}</p>
+                            <h2>{formData.name + ' ' + formData.surname}</h2>
+                            <p><strong>Email:</strong> {formData.email}</p>
+                            <p><strong>Membership:</strong> {formData.membershipType}</p>
+                            <p><strong>Member Since:</strong> {formData.joinDate}</p>
                         </div>
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="edit-btn"
-                        >
-                            Edit Profile
-                        </button>
+                        <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="profile-edit-form">
                         <div className="form-group">
-                            <label>Full Name</label>
+                            <label>Name</label>
                             <input
                                 type="text"
                                 name="name"
@@ -66,7 +110,16 @@ const UserProfile = ({ user, onLogout, onUpdateProfile }) => {
                                 required
                             />
                         </div>
-
+                        <div className="form-group">
+                                <label>Surname</label>
+                                <input
+                               type="text"
+                               name="surname"
+                               value={formData.surname}
+                               onChange={handleInputChange}
+                               required
+                             />
+                        </div>
                         <div className="form-group">
                             <label>Email</label>
                             <input
@@ -76,7 +129,17 @@ const UserProfile = ({ user, onLogout, onUpdateProfile }) => {
                                 onChange={handleInputChange}
                                 required
                             />
-                        </div>
+                            </div>
+                            <div className="form-group">
+                                <label>Phone Number</label>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
 
                         <div className="form-group">
                             <label>Membership Type</label>
@@ -84,7 +147,8 @@ const UserProfile = ({ user, onLogout, onUpdateProfile }) => {
                                 name="membershipType"
                                 value={formData.membershipType}
                                 onChange={handleInputChange}
-                            >
+                                >
+                                <option value="None">None</option>
                                 <option value="Basic">Basic</option>
                                 <option value="Premium">Premium</option>
                                 <option value="VIP">VIP</option>
@@ -107,7 +171,7 @@ const UserProfile = ({ user, onLogout, onUpdateProfile }) => {
                                 Cancel
                             </button>
                             <button type="submit" className="save-btn">
-                                Save Changes
+                                    Save Changes
                             </button>
                         </div>
                     </form>

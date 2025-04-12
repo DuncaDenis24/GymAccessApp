@@ -1,22 +1,21 @@
 ﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // <-- Add this
+import { useNavigate } from 'react-router-dom';
 import "../styles/Login.css";
 
-const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
-    const navigate = useNavigate(); // <-- Hook for navigation
+const Login = ({ onLoginSuccess }) => {
+    const navigate = useNavigate();
 
     const [isTabActive, setIsTabActive] = useState(true);
     const [isSignUp, setIsSignUp] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
-
+    const [isInstructor, setIsInstructor] = useState(false); // nou
     const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [surname, setSurname] = useState("");
     const [phone, setPhone] = useState("");
-    const [adminCode, setAdminCode] = useState("");
+    const [instructorCode, setInstructorCode] = useState(""); // nou
 
     useEffect(() => {
         const handleVisibilityChange = () => setIsTabActive(!document.hidden);
@@ -26,7 +25,7 @@ const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
 
     const resetForm = () => {
         setName(""); setEmail(""); setPassword(""); setConfirmPassword("");
-        setSurname(""); setPhone(""); setAdminCode(""); setIsSignUp(false); setIsAdmin(false);
+        setSurname(""); setPhone(""); setInstructorCode(""); setIsSignUp(false); setIsInstructor(false);
     };
 
     const handleRegister = async (e) => {
@@ -35,11 +34,18 @@ const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
             alert("Passwords do not match!");
             return;
         }
+
         try {
-            const endpoint = isAdmin ? 'register-admin' : 'register';
-            await axios.post(`http://localhost:5017/api/auth/${endpoint}`, {
-                name, surname, email, password, phone, adminCode, isAdmin
-            });
+            const endpoint = isInstructor ? 'register-instructor' : 'register';
+            const payload = {
+                name, surname, email, password, phone
+            };
+
+            if (isInstructor) {
+                payload.instructorCode = instructorCode;
+            }
+
+            await axios.post(`http://localhost:5017/api/auth/${endpoint}`, payload);
             alert('Registration successful! Please log in.');
             resetForm();
         } catch (error) {
@@ -50,42 +56,35 @@ const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:5017/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                body: JSON.stringify(isAdmin ? { email, password, adminCode, isAdmin } : { email, password })
-            });
+            const endpoint = isInstructor ? 'login-instructor' : 'login';
+            const payload = {
+                email,
+                password,
+            };
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || "Login failed");
+            if (isInstructor) {
+                payload.instructorCode = instructorCode;
+            }
 
-            // Handle success
-            alert("Login successful! You are logged in.");
+            const response = await axios.post(`http://localhost:5017/api/auth/${endpoint}`, payload);
+            const data = response.data;
+
+            alert("Login successful!");
             localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.id); 
 
             const userData = {
                 name: data.name,
                 email: data.email,
-                membershipType: data.membershipType || "Basic", // fallback if undefined
-                profilePicture: data.profilePicture,
-                joinDate: data.joinDate || new Date().toISOString()
+                role: data.role || (isInstructor ? "Instructor" : "User"),
+                photo: data.photo || null
             };
 
-            onLoginSuccess(userData);     // <-- Tell App.js the user is logged in
-            navigate("/profile");         // <-- Redirect to profile
+            onLoginSuccess(userData);
+            navigate("/UserProfile");
             resetForm();
         } catch (error) {
-            if (error.message.includes("Emailul nu a fost găsit")) {
-                alert("The email was not found.");
-            } else if (error.message.includes("Parola este incorectă")) {
-                alert("Incorrect password. Please try again.");
-            } else if (error.message.includes("Acest utilizator nu este administrator")) {
-                alert("This user is not an administrator.");
-            } else if (error.message.includes("Codul de administrator este incorect")) {
-                alert("Incorrect admin code.");
-            } else {
-                alert("Login failed: " + (error.message || "Unknown error"));
-            }
+            alert('Login failed: ' + (error.response?.data?.message || "Unknown error"));
         }
     };
 
@@ -96,7 +95,11 @@ const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
 
     return (
         <div className={`login-container ${isTabActive ? "" : "inactive"}`}>
-            <h2>{isSignUp ? (isAdmin ? "Admin Sign Up" : "User Sign Up") : (isAdmin ? "Admin Login" : "User Login")}</h2>
+            <h2>
+                {isSignUp
+                    ? (isInstructor ? "Instructor Sign Up" : "User Sign Up")
+                    : (isInstructor ? "Instructor Login" : "User Login")}
+            </h2>
             <form onSubmit={handleSubmit}>
                 {isSignUp && (
                     <>
@@ -118,26 +121,25 @@ const Login = ({ onLoginSuccess }) => { // <-- Accept this prop
                         <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                     </>
                 )}
-                {isAdmin && (
+                {isInstructor && (
                     <>
-                        <label>Admin Code:</label>
-                        <input type="password" value={adminCode} onChange={(e) => setAdminCode(e.target.value)} required />
+                        <label>Instructor Code:</label>
+                        <input type="password" value={instructorCode} onChange={(e) => setInstructorCode(e.target.value)} required />
                     </>
                 )}
                 <button type="submit"><h2>
                     {isSignUp
-                        ? (isAdmin ? "Admin Sign Up" : "User Sign Up")
-                        : (isAdmin ? "Admin Login" : "User Login")}
-                </h2></button>
+                        ? (isInstructor ? "Instructor Sign Up" : "User Sign Up")
+                        : (isInstructor ? "Instructor Login" : "User Login")}
+               </h2> </button>
             </form>
+
             <p onClick={() => setIsSignUp(!isSignUp)} className="toggle-text">
                 {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign up"}
             </p>
-            {!isSignUp && (
-                <p onClick={() => setIsAdmin(!isAdmin)} className="toggle-text">
-                    {isAdmin ? "Switch to User Login" : "Login as Administrator"}
-                </p>
-            )}
+            <p onClick={() => setIsInstructor(!isInstructor)} className="toggle-text">
+                {isInstructor ? "Switch to User Mode" : "Login/Register as Instructor"}
+            </p>
         </div>
     );
 };

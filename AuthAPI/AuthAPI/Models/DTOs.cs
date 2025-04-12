@@ -3,8 +3,7 @@ public class LoginDto
 {
     public string Email { get; set; }
     public string Password { get; set; }
-    public string? AdminCode { get; set; }
-    public bool IsAdmin { get; set; }
+    public string? InstructorCode { get; set; }
 }
 
 public class RegisterDto
@@ -14,7 +13,15 @@ public class RegisterDto
             public string Email { get; set; }
             public string Phone { get; set; }
             public string Password { get; set; }
-            public bool IsAdmin { get; set; } // trebuie să existe
-            public string? AdminCode { get; set; } // poate fi null
+            public string? InstructorCode { get; set; } 
         }
-    }
+        public class UserDto
+        {
+            public string Name { get; set; }
+            public string Surname { get; set; }
+            public string Email { get; set; }
+            public string Phone { get; set; }
+            public string Photo { get; set; }
+            public string MembershipType { get; set; } // e.g. "Basic"
+        }
+}

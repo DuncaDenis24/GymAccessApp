@@ -25,7 +25,7 @@ const App = () => {
             {user === null && <Background />}  {/* Only show Background if user is not logged in */}
 
             <Routes>
-                <Route
+                <Route      
                     path="/"
                     element={
                         user ? (
