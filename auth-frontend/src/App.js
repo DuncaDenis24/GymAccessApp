@@ -3,6 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './Components/Login';
 import UserProfile from './Components/UserProfile';
 import Background from './Components/BackGround';
+import Sidebar from './Components/Sidebar';
+
+import Dashboard from './Components/Dashboard';
+import WorkoutPlans from './Components/WorkoutPlans';
+import Settings from './Components/Settings';
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -22,10 +27,11 @@ const App = () => {
 
     return (
         <Router>
-            {user === null && <Background />}  {/* Only show Background if user is not logged in */}
+            {user && <Sidebar />}
+            {!user && <Background />}
 
             <Routes>
-                <Route      
+                <Route
                     path="/"
                     element={
                         user ? (
@@ -49,6 +55,9 @@ const App = () => {
                         )
                     }
                 />
+                <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" replace />} />
+                <Route path="/workouts" element={user ? <WorkoutPlans /> : <Navigate to="/" replace />} />
+                <Route path="/settings" element={user ? <Settings /> : <Navigate to="/" replace />} />
             </Routes>
         </Router>
     );

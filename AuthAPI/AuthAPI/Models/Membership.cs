@@ -11,7 +11,6 @@ namespace AuthAPI.Models
         public int Price { get; set; }  
         public string Membership_Type { get; set; }
     
-
     }
     
 }
