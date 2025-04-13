@@ -15,13 +15,12 @@ public class RegisterDto
             public string Password { get; set; }
             public string? InstructorCode { get; set; } 
         }
-        public class UserDto
-        {
-            public string Name { get; set; }
-            public string Surname { get; set; }
-            public string Email { get; set; }
-            public string Phone { get; set; }
-            public string Photo { get; set; }
-            public string MembershipType { get; set; } // e.g. "Basic"
-        }
+    public class UserDto
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Photo { get; set; }
+   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Profiler } from 'react';
+﻿import React, { useState, useEffect, Profiler } from 'react';
 import axios from 'axios';
 import "../styles/UserProfile.css";
 import profilePicture from "../assets/ProfilePic.jpg"; // Default profile picture
@@ -6,12 +6,16 @@ import profilePicture from "../assets/ProfilePic.jpg"; // Default profile pictur
 const UserProfile = ({ onLogout, onUpdateProfile }) => {
     const [user, setUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [error, setError] = useState(null); // Error state
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null); // Add success state
+
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
         email: '',
         phone: '',
-       membershipType: '',
+      // membershipType: '',
         profilePicture: '',
         joinDate: ''
     });
@@ -19,17 +23,24 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userId = localStorage.getItem("userId"); // or token
+                const userId = localStorage.getItem("userId");
                 const res = await axios.get(`http://localhost:5017/api/user/get/${userId}`);
                 const data = res.data;
 
-                setUser(data);
+
+                setUser({
+                    ...data,
+                    name: data.name,
+                    surname: data.surname,
+                    email: data.email,
+                    phone: data.phone,
+                    photo: data.photo
+                }); 
                 setFormData({
                     name: data.name,
                     surname: data.surname,
                     email: data.email,
                     phone: data.phone,
-                    membershipType: data.membershipType || 'None',
                     profilePicture: data.photo || profilePicture,
                     joinDate: data.joinDate ? data.joinDate.split('T')[0] : ''
                 });
@@ -37,7 +48,6 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                 console.error("Failed to fetch user data", err);
             }
         };
-
         fetchUser();
     }, []);
 
@@ -45,42 +55,133 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-
+    useEffect(() => {
+        let timer;
+        if (successMessage) {
+            timer = setTimeout(() => {
+                setSuccessMessage(null);
+            }, 4000);
+        }
+        return () => clearTimeout(timer); // Cleanup on unmount
+    }, [successMessage]);
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const userId = localStorage.getItem("userId");
+        setError(null);
+        setSuccessMessage(null);
+        const updatedData = {
+            Name: formData.name,
+            Surname: formData.surname,
+            Email: formData.email,
+            Phone: formData.phone,
+            Photo: formData.profilePicture
+        };
+            // Check for changes before API call
+            const hasChanges =
+                formData.name !== user.name ||
+                formData.surname !== user.surname ||
+                formData.email !== user.email ||
+                formData.phone !== user.phone ||
+                formData.profilePicture !== (user.photo || profilePicture);
 
-            // Map fields properly to match DTO
-            const updatedData = {
-                name: formData.name,
-                surname: formData.surname,
-                email: formData.email,
-                phone: formData.phone,
-                photo: formData.profilePicture // backend expects 'photo'
-            };
+            if (!hasChanges) {
+                setSuccessMessage("No changes were made");
+                return; // Stay in edit mode
+            }
 
-            await axios.put(`http://localhost:5017/api/user/update/${userId}`, updatedData);
+            try {
+                const userId = localStorage.getItem("userId");
+                const response = await axios.put(
+                    `http://localhost:5017/api/user/update/${userId}`,
+                    updatedData
+                );
+                const newUserData = {
+                    ...user,
+                    name: updatedData.Name,
+                    surname: updatedData.Surname,
+                    email: updatedData.Email,
+                    phone: updatedData.Phone,
+                    photo: updatedData.Photo
+                };
+                setUser(newUserData); // Update user state
+                setFormData({
+                    ...formData,
+                    ...updatedData,
+                    profilePicture: updatedData.Photo
+                });
 
-            setUser(prev => ({ ...prev, ...updatedData }));
-            onUpdateProfile(updatedData);
-            setIsEditing(false);
-        } catch (error) {
-            console.error("Failed to update user profile", error);
-        }
-    };
+                setSuccessMessage("Changes saved successfully!");
+                setIsEditing(false);
+            } catch (error) {
+                console.error("Update failed:", error);
+                setError(
+                    error.response?.data?.message ||
+                    error.response?.data ||
+                    "Failed to update profile. Please try again."
+                );
+            }
+        };
 
 
     if (!user) return <p>Loading profile...</p>;
 
     return (
         <div className="profile-container">
+            {showLogoutConfirm && (
+                <div className="logout-modal-overlay">
+                    <div className="logout-modal">
+                        <h3>Are you sure you want to log out?</h3>
+                        <div className="logout-modal-buttons">
+                            <button
+                                onClick={() => {
+                                    onLogout();
+                                    setShowLogoutConfirm(false);
+                                }}
+                                className="logout-confirm-btn"
+                            >
+                                Yes, Log Out
+                            </button>
+                            <button
+                                onClick={() => setShowLogoutConfirm(false)}
+                                className="logout-cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="profile-header">
                 <h1>My Gym Profile</h1>
-                <button onClick={onLogout} className="logout-btn">Logout</button>
-            </div>
-
+                <div className="logout-btn-container">
+                    <button
+                        onClick={() => setShowLogoutConfirm(true)}
+                        className="logout-btn"
+                    >
+                        Log Out
+                    </button>
+                </div>
+                </div>
+            
             <div className="profile-content">
+                <div className="message-container">
+                    {error && (
+                        <div className="notification error-notification fade-out">
+                            <span className="notification-icon">⚠️</span>
+                            <span>{typeof error === 'object' ? JSON.stringify(error) : error}</span>
+                        </div>
+                    )}
+                    {successMessage && (
+                        <div className={`notification fade-out ${successMessage === "No changes were made"
+                                ? "info-notification"
+                                : "success-notification"
+                            }`}>
+                            <span className="notification-icon">
+                                {successMessage === "No changes were made" ? "ℹ️" : "✓"}
+                            </span>
+                            <span>{successMessage}</span>
+                        </div>
+                    )}
+                </div>
                 {!isEditing ? (
                     <div className="profile-view">
                         <div className="avatar-section">
@@ -93,7 +194,7 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                         <div className="profile-details">
                             <h2>{formData.name + ' ' + formData.surname}</h2>
                             <p><strong>Email:</strong> {formData.email}</p>
-                            <p><strong>Membership:</strong> {formData.membershipType}</p>
+                            <p><strong>Membership:</strong> {'None'}</p>
                             <p><strong>Member Since:</strong> {formData.joinDate}</p>
                         </div>
                         <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
@@ -140,22 +241,7 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                                     required
                                 />
                             </div>
-
-                        <div className="form-group">
-                            <label>Membership Type</label>
-                            <select
-                                name="membershipType"
-                                value={formData.membershipType}
-                                onChange={handleInputChange}
-                                >
-                                <option value="None">None</option>
-                                <option value="Basic">Basic</option>
-                                <option value="Premium">Premium</option>
-                                <option value="VIP">VIP</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group">
+                            <div className="form-group">
                             <label>Profile Picture URL</label>
                             <input
                                 type="url"

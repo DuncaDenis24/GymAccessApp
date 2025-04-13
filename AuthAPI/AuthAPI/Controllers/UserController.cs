@@ -37,16 +37,15 @@ public class UserController : ControllerBase
     [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto updatedUser)
     {
-        var user = await _context.Users.FindAsync(id);
+      try{
+            var user = await _context.Users.FindAsync(id);
         if (user == null)
             return NotFound();
 
         // Find Membership by name
-        var membership = await _context.Memberships
-            .FirstOrDefaultAsync(m => m.Membership_Type == updatedUser.MembershipType);
-
-        if (membership == null)
-            return BadRequest("Invalid membership type");
+     
+        //if (membership == null)
+          //  return BadRequest("Invalid membership type");
 
         // Update fields
         user.Name = updatedUser.Name;
@@ -54,10 +53,14 @@ public class UserController : ControllerBase
         user.Email = updatedUser.Email;
         user.Phone = updatedUser.Phone;
         user.Photo = updatedUser.Photo;
-        user.Membership_Id = membership.Membership_Id;
+       // user.Membership_Id = membership.Membership_Id;
 
         await _context.SaveChangesAsync();
         return NoContent();
+    }catch (Exception ex)
+    {
+            return StatusCode(500, new { message = "An error occurred", error = ex.Message });
+        }
     }
 }
 

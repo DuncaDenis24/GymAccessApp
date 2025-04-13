@@ -23,7 +23,7 @@ const Sidebar = () => {
                     <ul>
                         <li onClick={toggleSidebar}><Link to="/profile">Profile</Link></li>
                         <li onClick={toggleSidebar}><Link to="/dashboard">Dashboard</Link></li>
-                        <li onClick={toggleSidebar}><Link to="/workouts">Workout Plans</Link></li>
+                        <li onClick={toggleSidebar}><Link to="/memberships">Membership Plans</Link></li>
                         <li onClick={toggleSidebar}><Link to="/settings">Settings</Link></li>
                     </ul>
                 </nav>

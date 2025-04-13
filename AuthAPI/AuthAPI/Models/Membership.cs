@@ -10,7 +10,6 @@ namespace AuthAPI.Models
         public string? EndDate { get; set; }
         public int Price { get; set; }  
         public string Membership_Type { get; set; }
-    
     }
     
 }
