@@ -1,17 +1,21 @@
 /* Center the login form */
 .login-container {
-    max-width: 1280px;
-    margin: auto;
-    padding: 2rem;
+    position: fixed;
+    width: clamp(10px, 30%, 400px); /* Responsive width range */
+    max-width: 100%;
+    padding: clamp(0.5rem, 3vw, 5rem); /* Responsive padding */
     background: #ff0000;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     text-align: center;
-    transition: all 0.3s;
-    position: absolute;
-    top: 10px;
-    left: 1400px;
+    transition: all 0.3s ease;
+    top: 2vh; /* Viewport-relative positioning */
+    right: 2vw;
+    margin: 0;
+    z-index: 1000;
 }
+
+
 
 .inactive {
     background: #ccc;
