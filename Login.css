@@ -1,0 +1,70 @@
+/* Center the login form */
+.login-container {
+    position: fixed;
+    width: clamp(10px, 30%, 400px); /* Responsive width range */
+    max-width: 100%;
+    padding: clamp(0.5rem, 3vw, 5rem); /* Responsive padding */
+    background: #ff0000;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    top: 2vh; /* Viewport-relative positioning */
+    right: 2vw;
+    margin: 0;
+    z-index: 1000;
+    width: 20vw;
+    padding: 2vw;
+    background: #ff0000;
+    border-radius: 1vw;
+    box-shadow: 0 0 1vw rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s;
+    position: absolute;
+    top: 5%;
+    right: 5%;
+}
+
+
+
+.inactive {
+    background: #ccc;
+    color: gray;
+}
+
+/* Form input fields */
+.login-container input {
+    width: 85%;
+    padding: 1vw;
+    margin: 1vh 0;
+    border: 1px solid #ccc;
+    border-radius: 0.5vw;
+}
+
+/* Submit button */
+.login-container button {
+    width: 70%;
+    padding: 0.7vw;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 0.7vw;
+    cursor: pointer;
+    font-size: 1.0vw;
+    margin-top: 1vh;
+}
+
+    .login-container button:hover {
+        background-color: darkred;
+    }
+
+.toggle-text {
+    margin-top: 1vh;
+    text-align: center;
+    color: #000;
+    cursor: pointer;
+}
+
+    .toggle-text:hover {
+        text-decoration: underline;
+    }
