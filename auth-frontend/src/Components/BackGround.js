@@ -8,7 +8,8 @@ const Background = () => {
         <div className="background-container">
             <div className="overlay">
                 <h1>Gym Access App</h1>
-                <p>Welcome to our gym management system! We provide the best gym experience with:</p>
+                <p>Welcome to our gym management system!</p>
+                <p>We provide the best gym experience with:</p>
                 <ul>
                     <li>Easy membership access</li>
                     <li>Personalized training plans</li>

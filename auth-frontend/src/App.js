@@ -8,9 +8,11 @@ import Sidebar from './Components/Sidebar';
 import Dashboard from './Components/Dashboard';
 import Settings from './Components/Settings';
 import MembershipPlans from './Components/MembershipPlans';
+import InstructorProfile from './Components/InstructorProfile';
 
 const App = () => {
     const [user, setUser] = useState(null);
+    const [instructor, setInstructor] = useState(null);
 
     // 👇 Load from localStorage on app start
     useEffect(() => {
@@ -59,6 +61,20 @@ const App = () => {
                         user ? (
                             <UserProfile
                                 user={user}
+                                onLogout={handleLogout}
+                                onUpdateProfile={handleUpdateProfile}
+                            />
+                        ) : (
+                            <Navigate to="/" replace />
+                        )
+                    }
+                />
+                <Route
+                    path="/instructorProfile"
+                    element={
+                        instructor ? (
+                            <InstructorProfile
+                                instructor={instructor}
                                 onLogout={handleLogout}
                                 onUpdateProfile={handleUpdateProfile}
                             />
