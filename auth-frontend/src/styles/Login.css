@@ -13,8 +13,17 @@
     right: 2vw;
     margin: 0;
     z-index: 1000;
+    width: 20vw;
+    padding: 2vw;
+    background: #ff0000;
+    border-radius: 1vw;
+    box-shadow: 0 0 1vw rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s;
+    position: absolute;
+    top: 5%;
+    right: 5%;
 }
-
 
 
 .inactive {
@@ -25,23 +34,23 @@
 /* Form input fields */
 .login-container input {
     width: 100%;
-    padding: 10px;
-    margin: 10px -10px;
+    padding: 0.3vw;
+    margin: 1vh 0;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 0.5vw;
 }
 
 /* Submit button */
 .login-container button {
-    width: 100%;
-    padding: 10px;
-    background-color: #000000;
+    width: 70%;
+    padding: 0.7vw;
+    background-color: #000;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.7vw;
     cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
+    font-size: 1.0vw;
+    margin-top: 1vh;
 }
 
     .login-container button:hover {
@@ -49,7 +58,7 @@
     }
 
 .toggle-text {
-    margin-top: 10px;
+    margin-top: 0.3vw;
     text-align: center;
     color: #000000;
     cursor: pointer;

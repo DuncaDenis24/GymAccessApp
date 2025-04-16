@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuthAPI.Models
 {
@@ -13,9 +14,13 @@ namespace AuthAPI.Models
         public string Phone { get; set; }
         public string? Photo { get; set; }
         public DateTime JoinDate { get; set; }
-        public int? Membership_Id { get; set; } 
-      
+        [ForeignKey("Membership")]
+        public int? Membership_Id { get; set; }
+        public Membership? Membership { get; set; }
+
+        [ForeignKey("Instructor")]
         public int? Instructor_Id { get; set; }
-      
+        public Instructor? Instructor { get; set; }
+
     }
 }
