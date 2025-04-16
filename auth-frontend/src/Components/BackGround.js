@@ -16,6 +16,18 @@ const Background = () => {
                     <li>24/7 gym availability</li>
                     <li>Online bookings & payments</li>
                 </ul>
+                <div class="dumbbell-animation">
+                    <svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+                        <g class="bouncing">
+                            
+                            <rect x="40" y="35" width="20" height="4" fill="#fff" />
+                            
+                            <rect x="30" y="32" width="8" height="10" fill="#ccc" />
+                            
+                            <rect x="62" y="32" width="8" height="10" fill="#ccc" />
+                        </g>
+                    </svg>
+                </div>
 
                 <div className="image-gallery">
                     <img src={gym1} alt="Gym Workout" />
