@@ -30,8 +30,49 @@ const Login = ({ onLoginSuccess }) => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        const validPassword = /^[a-zA-Z0-9!@#$%^&*]+$/;
+
+        if (!validPassword.test(password)) {
+            alert("Password can only contain letters, numbers, and !@#$%^&* characters.");
+            return;
+        }
+
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
+            return;
+        }
+
+        const validName = /^[a-zA-Z]+$/;
+
+        if (!validName.test(name)) {
+            alert("Name can only contain letters!");
+            return;
+        }
+
+        const validSurname = /^[a-zA-Z]+$/;
+
+        if (!validSurname.test(surname)) {
+            alert("Surname can only contain letters!");
+            return;
+        }
+
+        const validPhone = /^[0-9]+$/;
+
+        if (!validPhone.test(phone) || phone.length !== 10) {
+            alert("Phone is not in the right format");
+            return;
+        }
+
+        const validEmail = /^[a-zA-Z0-9._-]+@[a-z]+\.[a-z]{2,}$/;
+
+        if (!validEmail.test(email)) {
+            alert("Please enter a valid email address.It must contain only letters, numbers, and valid characters(.-_), include an '@' symbol and a valid domain.");
+            return;
+        }
+
+        if (email.includes('..')) {
+            alert("Please enter a valid email address.It must contain only letters, numbers, and valid characters(.-_), include an '@' symbol and a valid domain. It can't contain double dot(..)");
             return;
         }
 
@@ -71,7 +112,7 @@ const Login = ({ onLoginSuccess }) => {
 
             alert("Login successful!");
             localStorage.setItem("token", data.token);
-            localStorage.setItem("userId", data.id); 
+            localStorage.setItem("userId", data.id);
 
             const userData = {
                 name: data.name,
@@ -131,7 +172,7 @@ const Login = ({ onLoginSuccess }) => {
                     {isSignUp
                         ? (isInstructor ? "Instructor Sign Up" : "User Sign Up")
                         : (isInstructor ? "Instructor Login" : "User Login")}
-               </h2> </button>
+                </h2> </button>
             </form>
 
             <p onClick={() => setIsSignUp(!isSignUp)} className="toggle-text">
