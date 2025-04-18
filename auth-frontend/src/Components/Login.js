@@ -110,20 +110,28 @@ const Login = ({ onLoginSuccess }) => {
             const response = await axios.post(`http://localhost:5017/api/auth/${endpoint}`, payload);
             const data = response.data;
 
-            alert("Login successful!");
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("userId", data.id);
-
             const userData = {
                 name: data.name,
                 email: data.email,
-                role: data.role || (isInstructor ? "Instructor" : "User"),
+                role: data.role || (isInstructor ? "instructor" : "user"),
                 photo: data.photo || null
             };
-
-            onLoginSuccess(userData);
-            navigate("/UserProfile");
-            resetForm();
+            alert("Login successful!");
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.id);
+            localStorage.setItem("role", data.role);
+            
+           
+           
+            if (!isInstructor) {
+                onLoginSuccess(userData);
+                navigate("/UserProfile");
+                resetForm();
+            } else {
+               onLoginSuccess(userData);
+               navigate("/InstructorProfile");
+               resetForm();
+            }
         } catch (error) {
             alert('Login failed: ' + (error.response?.data?.message || "Unknown error"));
         }

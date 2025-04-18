@@ -16,9 +16,9 @@ const Background = () => {
                     <li>24/7 gym availability</li>
                     <li>Online bookings & payments</li>
                 </ul>
-                <div class="dumbbell-animation">
+                <div className="dumbbell-animation">
                     <svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
-                        <g class="bouncing">
+                        <g className="bouncing">
                             
                             <rect x="40" y="35" width="20" height="4" fill="#fff" />
                             

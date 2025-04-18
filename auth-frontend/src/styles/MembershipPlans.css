@@ -33,7 +33,190 @@
     }
 
 .join-btn {
-    padding: 0.8rem;
-    font-size: clamp(0.9rem, 2vw, 1rem);
+    padding: 1rem;
+    font-size: clamp(0.9rem, 1vw, 3rem);
+    background-color:azure;   
     border-radius: 0.3rem;
+}
+    .join-btn:hover {
+        background-color:red
+    }
+/* Modal backdrop */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure the modal appears above other content */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out; /* Smooth fade-in/fade-out */
+}
+
+    .modal.show {
+        opacity: 1;
+    }
+
+/* Modal content */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+    /* Modal header */
+    .modal-content h3 {
+        margin-bottom: 15px;
+        font-size: 1.25rem;
+        color: #333;
+    }
+
+/* Select box */
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Buttons */
+.modal-actions button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    /* Confirm button style */
+    .modal-actions button:nth-child(1) {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+        .modal-actions button:nth-child(1):hover {
+            background-color: #45a049;
+        }
+
+    /* Cancel button style */
+    .modal-actions button:nth-child(2) {
+        background-color: #f44336;
+        color: white;
+    }
+
+        .modal-actions button:nth-child(2):hover {
+            background-color: #e53935;
+        }
+
+/* Animation for modal */
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.message-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999; /* Ensure this is higher than other components */
+    width: auto;
+    max-width: 90%;
+    pointer-events: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Base message styling */
+.notification {
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    opacity: 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeOut 4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+/* Cool animated border effect */
+.notification::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+    animation: borderGlow 2s infinite linear;
+}
+
+@keyframes borderGlow {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Fading out animation */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+}
+
+.fade-out {
+    animation: fadeOut 4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+}
+
+/* Success notification style */
+.success-notification {
+    color: #2d8515;
+    background: linear-gradient(to right, #e6f7e1, #f0fae8);
+    border-left: 4px solid #2d8515;
+}
+
+/* Info notification style */
+.info-notification {
+    color: #31708f;
+    background: linear-gradient(to right, #d9edf7, #e8f4fa);
+    border-left: 4px solid #31708f;
+}
+
+/* Error notification style */
+.error-notification {
+    color: #ff3333;
+    background: linear-gradient(to right, #ffeeee, #fff5f5);
+    border-left: 4px solid #ff3333;
 }

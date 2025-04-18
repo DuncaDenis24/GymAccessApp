@@ -4,10 +4,12 @@ import Login from './Components/Login';
 import UserProfile from './Components/UserProfile';
 import Background from './Components/BackGround';
 import Sidebar from './Components/Sidebar';
-
 import Dashboard from './Components/Dashboard';
 import Settings from './Components/Settings';
 import MembershipPlans from './Components/MembershipPlans';
+import InstructorProfile from './Components/InstructorProfile';
+import InstructorsClients from './Components/InstructorsClients'
+import Facilities from './Components/Facilities';
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -47,7 +49,11 @@ const App = () => {
                     path="/"
                     element={
                         user ? (
-                            <Navigate to="/profile" replace />
+                            user.role === "instructor" ? (
+                                <Navigate to="/instructor-profile" replace />
+                            ) : (
+                                <Navigate to="/profile" replace />
+                            )
                         ) : (
                             <Login onLoginSuccess={handleLoginSuccess} />
                         )
@@ -67,9 +73,29 @@ const App = () => {
                         )
                     }
                 />
+                <Route
+                    path="/instructor-profile"
+                    element={
+                        user ? (
+                            user.role === "instructor" ? (
+                                <InstructorProfile
+                                    user={user}
+                                    onLogout={handleLogout}
+                                    onUpdateProfile={handleUpdateProfile}
+                                />
+                            ) : (
+                                <Navigate to="/" replace />
+                            )
+                        ) : (
+                            <Navigate to="/" replace />
+                        )
+                    }
+                />
                 <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" replace />} />
                 <Route path="/memberships" element={user ? <MembershipPlans /> : <Navigate to="/" replace />} />
                 <Route path="/settings" element={user ? <Settings /> : <Navigate to="/" replace />} />
+                <Route path="/instructorsclients" element={user ? <InstructorsClients /> : <Navigate to="/" replace />} />
+                <Route path="/facilities" element={user? <Facilities/> :<Navigate to="/" /> } />
             </Routes>
         </Router>
     );
