@@ -47,14 +47,38 @@ public class InstructorController : ControllerBase
     [HttpGet("get/{id}/clients")]
     public async Task<IActionResult> GetInstructorClients(int id)
     {
+        try
+        {
+            var clients = await _context.Users
+                .Include(u => u.Membership)
+                .Where(u => u.Instructor_Id == id)
+                .Select(u => new
+                {
+                    UserId = u.User_Id,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    Email = u.Email,
+                    Phone = u.Phone,
+                    Photo = u.Photo,
+                    Membership = u.Membership != null ? new
+                    {
+                        Type = u.Membership.Membership_Type,
+                        Price = u.Membership.Price,
+                        StartDate = u.Membership.StartDate,
+                        EndDate = u.Membership.EndDate
+                    } : null
+                })
+                .ToListAsync();
 
-        var clients = await _context.Users
-            .Where(u => u.Instructor_Id == id)
-            .ToListAsync();
-
-        // Returnăm mereu 200, chiar și dacă nu sunt clienți
-        return Ok(clients);
+            return Ok(clients);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while retrieving the clients.", error = ex.Message });
+        }
     }
+
+
     [HttpGet("get/{id}/clients/count")]
     public async Task<IActionResult> GetInstructorClientsNumber(int id)
     {

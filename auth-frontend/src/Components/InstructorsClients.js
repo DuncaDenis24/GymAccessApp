@@ -11,7 +11,9 @@ const InstructorClients = ({ instructorId }) => {
         const fetchClients = async () => {
             try {
                 const response = await fetch(`http://localhost:5017/api/instructors/get/${instructorId}/clients`);
-                    const data = await response.json();
+                const data = await response.json();
+                console.log("API response:", data);
+
                     setClients(data);
             } catch (error) {
                 console.error("Error fetching clients:", error);
@@ -35,7 +37,7 @@ const InstructorClients = ({ instructorId }) => {
             ) : (
                 <div className="clients-grid">
                     {clients.map((client) => (
-                        <div key={client.user_Id} className="client-card">
+                        <div key={client.userId} className="client-card">
                             <img
                                 src={client.photo || "/default-avatar.png"}
                                 alt={client.name}
@@ -45,6 +47,7 @@ const InstructorClients = ({ instructorId }) => {
                                 <h4>{client.name} {client.surname}</h4>
                                 <p>Email: {client.email}</p>
                                 <p>Phone: {client.phone}</p>
+                                <p>Membership: {client.membership?.type || "None"}</p>
                             </div>
                         </div>
                     ))}

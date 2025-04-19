@@ -45,7 +45,7 @@
     }
 
     .overlay li {
-        font-size: 1.2vw;
+        font-size: 1.3vw;
         margin: 1vh 0;
     }
 
@@ -64,20 +64,24 @@
         object-fit: fill;
         border-radius: 1vw;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-top: 1vh; 
+        margin-bottom: 4vh;
     }
         .image-gallery img:hover {
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
+    
+
 
 .dumbbell-animation {
     position: absolute;
-    bottom: 2vh;
+    bottom: 3vh;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;
-    height: 160px;
+    width: 25vw; /* roughly responsive version of 400px */
+    height: 10vw; /* roughly responsive version of 160px */
     z-index: 1;
 }
 
@@ -97,6 +101,6 @@
     }
 
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-1.75vh); /* use vh to make vertical bounce responsive */
     }
 }
