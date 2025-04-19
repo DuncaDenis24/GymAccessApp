@@ -5,7 +5,7 @@ import Notification from './Notification';
 import "../styles/Login.css";
 
 const Login = ({ onLoginSuccess }) => {
-    const navigate = useNavigate();
+    const navigate = useNavigate('');
     const [isSignUp, setIsSignUp] = useState(false);
     const [isInstructor, setIsInstructor] = useState(false);
     const [name, setName] = useState("");
@@ -95,6 +95,7 @@ const Login = ({ onLoginSuccess }) => {
                 role: data.role || (isInstructor ? "instructor" : "user"),
                 photo: data.photo || null
             };
+           
 
             setNotification({type: "success", message: "Login successful!"});
 
@@ -102,13 +103,11 @@ const Login = ({ onLoginSuccess }) => {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.id);
                 localStorage.setItem("role", data.role);
-
-                if (!isInstructor) {
-                    onLoginSuccess(userData);
-                    navigate("/UserProfile");
+                onLoginSuccess(userData);
+                if (userData.role === 'instructor') {
+                    navigate('/instructor-profile');
                 } else {
-                    onLoginSuccess(userData);
-                    navigate("/InstructorProfile");
+                    navigate('/profile');
                 }
 
                 resetForm();

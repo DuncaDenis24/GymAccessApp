@@ -116,5 +116,17 @@ public class InstructorController : ControllerBase
             return StatusCode(500, new { message = "An error occurred", error = ex.Message });
         }
     }
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteInstructor(int id)
+    {
+        var instructor = await _context.Instructors.FindAsync(id);
 
+        if (instructor == null)
+            return NotFound(new { message = "Instructor not found." });
+
+        _context.Instructors.Remove(instructor);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Instructor deleted successfully." });
+    }
 }

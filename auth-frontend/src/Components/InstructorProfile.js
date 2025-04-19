@@ -17,6 +17,7 @@ const InstructorProfile = ({ onLogout }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [showCancelEditing, setShowCancelEditing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,6 +64,35 @@ const InstructorProfile = ({ onLogout }) => {
             formData.phone !== instructor?.phone ||
             formData.profilePicture !== instructor?.photo
         );
+    };
+    const handleDeleteAccount = async () => {
+
+
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            setNotification({ type: "error", message: "User ID not found!" });
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5017/api/instructors/delete/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                setNotification({ type: "succes", message: "Account deleted successfully." });
+                localStorage.clear(); // Clear user data from localStorage
+            } else {
+                const errorData = await response.json();
+                setNotification({ type: "error", message: "Error deleting account: " + errorData.message });
+            }
+        } catch (error) {
+            console.error("Error deleting account:", error);
+            setNotification({ type: "error", message: "An unexpected error occurred." });
+        }
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -182,7 +212,31 @@ const InstructorProfile = ({ onLogout }) => {
                     </div>
                 </div>
             )}
-
+            {showDeleteConfirm && (
+                <div className="logout-modal-overlay">
+                    <div className="logout-modal">
+                        <h3>Are you sure you want to delete this account?</h3>
+                        <div className="logout-modal-buttons">
+                            <button
+                                onClick={() => {
+                                    handleDeleteAccount();
+                                    onLogout();
+                                    setShowDeleteConfirm(false);
+                                }}
+                                className="logout-confirm-btn"
+                            >
+                                Yes, Delete Acount
+                            </button>
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="logout-cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {showCancelEditing && (
                 <div className="logout-modal-overlay">
                     <div className="logout-modal">
@@ -226,6 +280,11 @@ const InstructorProfile = ({ onLogout }) => {
                         <div className="profile-buttons">
                             <button onClick={() => setIsEditing(true)} className="edit-btn">
                                 Edit Profile
+                            </button>
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                className="delete-btn"
+                            > Delete Account
                             </button>
                         </div>
                     </div>

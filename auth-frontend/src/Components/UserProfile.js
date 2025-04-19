@@ -16,6 +16,8 @@ const UserProfile = ({ onLogout }) => {
     const [showCancelMembership, setShowCancelMembership] = useState(false);
     const [showMembership, setShowMembership] = useState(false);
     const [showCancelEditing, setShowCancelEditing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
 
     // Form data state
     const [formData, setFormData] = useState({
@@ -90,6 +92,37 @@ const UserProfile = ({ onLogout }) => {
             formData.profilePicture !== (user.photo || profilePicture)
         );
     };
+    const handleDeleteAccount = async () => {
+       
+
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            setNotification({ type: "error", message: "User ID not found!" });
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5017/api/user/delete/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                setNotification({ type: "succes", message: "Account deleted successfully." });
+                localStorage.clear(); // Clear user data from localStorage
+            } else {
+                const errorData = await response.json();
+                setNotification({type: "error", message: "Error deleting account: " + errorData.message});
+            }
+        } catch (error) {
+            console.error("Error deleting account:", error);
+            setNotification({ type: "error", message: "An unexpected error occurred." });
+        }
+    };
+
+
 
     // Handle form submission
     const handleSubmit = async (e) => {
@@ -224,7 +257,31 @@ const UserProfile = ({ onLogout }) => {
                     </div>
                 </div>
             )}
-
+            {showDeleteConfirm && (
+                <div className="logout-modal-overlay">
+                    <div className="logout-modal">
+                        <h3>Are you sure you want to delete this account?</h3>
+                        <div className="logout-modal-buttons">
+                            <button
+                                onClick={() => {
+                                    handleDeleteAccount();
+                                    onLogout();
+                                    setShowDeleteConfirm(false);
+                                }}
+                                className="logout-confirm-btn"
+                            >
+                                Yes, Delete Acount
+                            </button>
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="logout-cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Membership Cancellation Modal */}
             {showCancelMembership && (
                 <div className="logout-modal-overlay">
@@ -340,7 +397,13 @@ const UserProfile = ({ onLogout }) => {
                                     </button>
                                 </Link>
                             )}
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                className="delete-btn"
+                            > Delete Account
+                            </button>
                         </div>
+
 
                         {/* Membership Details Section */}
                         {showMembership && membershipDetails && (
