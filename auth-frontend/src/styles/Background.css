@@ -33,7 +33,6 @@
     .overlay p {
         font-size: clamp(1rem, 2vw, 1.2rem);
         max-width: 80%;
-        margin-bottom: 20px;
         font-size: 1.5vw;
         max-width: 80%;
         margin-bottom: 2vh;
@@ -45,7 +44,7 @@
     }
 
     .overlay li {
-        font-size: 1.3vw;
+        font-size: clamp(0.9rem, 1.3vw, 1.1rem);
         margin: 1vh 0;
     }
 
@@ -56,6 +55,7 @@
     justify-content: center;
     gap: 2vw;
     margin-top: 3vh;
+    padding-bottom: 15vh;
 }
 
     .image-gallery img {
