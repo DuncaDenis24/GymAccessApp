@@ -1,0 +1,76 @@
+/* Notification.css */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out forwards;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 350px;
+    pointer-events: auto;
+}
+
+.notification-icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+.success-notification {
+    color: #2d8515;
+    background: linear-gradient(to right, #e6f7e1, #f0fae8);
+    border-left: 4px solid #2d8515;
+}
+
+.info-notification {
+    color: #31708f;
+    background: linear-gradient(to right, #d9edf7, #e8f4fa);
+    border-left: 4px solid #31708f;
+}
+
+.error-notification {
+    color: #ff3333;
+    background: linear-gradient(to right, #ffeeee, #fff5f5);
+    border-left: 4px solid #ff3333;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.5s ease-in forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
+}

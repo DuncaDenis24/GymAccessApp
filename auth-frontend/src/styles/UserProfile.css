@@ -154,6 +154,7 @@
     justify-content: center;
     align-items: center;
     z-index: 2000;
+    backdrop-filter: blur(3px);
 }
 
 .logout-modal {
@@ -164,6 +165,7 @@
     width: 90%;
     max-width: 400px;
     text-align: center;
+   
 }
 
     .logout-modal h3 {

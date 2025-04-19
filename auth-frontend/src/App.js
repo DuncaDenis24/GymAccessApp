@@ -91,11 +91,11 @@ const App = () => {
                         )
                     }
                 />
-                <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" replace />} />
-                <Route path="/memberships" element={user ? <MembershipPlans /> : <Navigate to="/" replace />} />
-                <Route path="/settings" element={user ? <Settings /> : <Navigate to="/" replace />} />
-                <Route path="/instructorsclients" element={user ? <InstructorsClients /> : <Navigate to="/" replace />} />
-                <Route path="/facilities" element={user? <Facilities/> :<Navigate to="/" /> } />
+                <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/dashboard" replace />} />
+                <Route path="/memberships" element={user ? <MembershipPlans /> : <Navigate to="/memberships" replace />} />
+                <Route path="/settings" element={user ? <Settings /> : <Navigate to="/settings" replace />} />
+                <Route path="/instructorsclients" element={user ? <InstructorsClients /> : <Navigate to="/instructorsclients" replace />} />
+                <Route path="/facilities" element={user? <Facilities/> :<Navigate to="/facilities" replace/> } />
             </Routes>
         </Router>
     );

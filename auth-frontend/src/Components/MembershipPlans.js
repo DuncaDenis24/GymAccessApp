@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+﻿import React, { useState, useEffect} from "react";
+import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "../styles/MembershipPlans.css";
+import Notification from './Notification';
 
 const plans = [
     {
@@ -55,6 +56,7 @@ const MembershipPlans = () => {
     const [selectedDuration, setSelectedDuration] = useState(1);
     const [totalPrice, setTotalPrice] = useState(null);
     const [notification, setNotification] = useState(null);
+    const navigate = useNavigate();
 
     // Fetch instructors on component mount
     useEffect(() => {
@@ -114,8 +116,9 @@ const MembershipPlans = () => {
 
     const handleConfirmMembership = async () => {
         if (!selectedInstructor) {
+            // Show notification if no instructor is selected
             setNotification({ type: 'error', message: "Please select an instructor!" });
-            return;
+            return; // Stop further execution
         }
 
         const userId = localStorage.getItem("userId");
@@ -133,93 +136,106 @@ const MembershipPlans = () => {
             const response = await axios.post("http://localhost:5017/api/memberships/create", membershipData);
             setNotification({ type: 'success', message: "Membership created successfully!" });
             setShowModal(false);
+
+            // Așteptăm notificarea să fie afișată complet (ex. 3.5 secunde), apoi navigăm
+            setTimeout(() => {
+                navigate('/profile');
+            }, 3500);
         } catch (error) {
             console.error("Error creating membership:", error);
             setNotification({ type: 'error', message: "Failed to create membership." });
         }
-    };
+    }
+
+
+
+    useEffect(() => {
+        if (notification) {
+            const timer = setTimeout(() => {
+                setNotification(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [notification]);
 
     const handleCancelMembership = () => {
         setShowModal(false);
     };
 
-    const renderNotification = () => {
-        if (!notification) return null;
-
-        return (
-            <div className={`notification ${notification.type}-notification fade-out`}>
-                <span className="notification-icon">ℹ️</span>
-                {notification.message}
-            </div>
-        );
-    };
+   
 
     return (
-        <div className="plans-container">
-            {renderNotification()}
-            <h1 className="plans-title">Choose Your Membership</h1>
-            <div className="plans-grid">
-                {plans.map((plan, index) => (
-                    <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
-                        <h2>{plan.name}</h2>
-                        <p><strong>Price:</strong> ${plan.price}/mo</p>
-                        <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
-                        <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
-                        <p><strong>Access:</strong> {plan.access}</p>
-                        <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
-                    </div>
-                ))}
-            </div>
-
-            {showModal && (
-                <div className="modal show">
-                    <div className="modal-content">
-                        {existingMembership ? (
-                            <>
-                                <h3>You already have an active membership!</h3>
-                                <p>To view your membership details, please visit your profile page.</p>
-                                <div className="modal-actions">
-                                    <Link to="/profile">
-                                        <button>
-                                            Go to Profile
-                                        </button>
-                                    </Link>
-                                    <button onClick={handleCancelMembership}>Close</button>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <h3>Select an Instructor for {selectedPlan.name}</h3>
-                                <select onChange={handleInstructorChange}>
-                                    <option value="">Choose an Instructor</option>
-                                    {instructors.map((instructor) => (
-                                        <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
-                                            {instructor.name} {instructor.surname}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <h4>Choose Membership Duration</h4>
-                                <select onChange={handleDurationChange}>
-                                    <option value={1}>1 Month</option>
-                                    <option value={3}>3 Months</option>
-                                    <option value={6}>6 Months</option>
-                                    <option value={12}>12 Months</option>
-                                </select>
-
-                                <p><strong>Total Price: ${totalPrice}</strong></p>
-
-                                <div className="modal-actions">
-                                    <button onClick={handleConfirmMembership}>Confirm Membership</button>
-                                    <button onClick={handleCancelMembership}>Cancel</button>
-                                </div>
-                            </>
-                        )}
-                    </div>
+            <div className="plans-container">
+                <h1 className="plans-title">Choose Your Membership</h1>
+                <div className="plans-grid">
+                    {plans.map((plan, index) => (
+                        <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
+                            <h2>{plan.name}</h2>
+                            <p><strong>Price:</strong> ${plan.price}/mo</p>
+                            <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
+                            <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
+                            <p><strong>Access:</strong> {plan.access}</p>
+                            <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
+                        </div>
+                    ))}
                 </div>
-            )}
-        </div>
+                {notification && (
+                    <Notification
+                        message={notification.message}
+                        type={notification.type}
+                        onClose={() => setNotification(null)}
+                    />
+                )}
+                {showModal && (
+                    <div className="modal show">
+                        <div className="modal-content">
+                            {existingMembership ? (
+                                <>
+                                    <h3>You already have an active membership!</h3>
+                                    <p>To view your membership details, please visit your profile page.</p>
+                                    <div className="modal-actions">
+                                        <Link to="/profile">
+                                            <button>Go to Profile</button>
+                                        </Link>
+                                        <button onClick={handleCancelMembership}>Close</button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <h3>Select an Instructor for {selectedPlan.name}</h3>
+                                    <select onChange={handleInstructorChange}>
+                                        <option value="">Choose an Instructor</option>
+                                        {instructors.map((instructor) => (
+                                            <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
+                                                {instructor.name} {instructor.surname}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <h4>Choose Membership Duration</h4>
+                                    <select onChange={handleDurationChange}>
+                                        <option value={1}>1 Month</option>
+                                        <option value={3}>3 Months</option>
+                                        <option value={6}>6 Months</option>
+                                        <option value={12}>12 Months</option>
+                                    </select>
+
+                                    <p><strong>Total Price: ${totalPrice}</strong></p>
+
+                                    <div className="modal-actions">
+                                        <button onClick={handleConfirmMembership}>Confirm Membership</button>
+                                        <button onClick={handleCancelMembership}>Cancel</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        
     );
+
+
 };
 
 export default MembershipPlans;

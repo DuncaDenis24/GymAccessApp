@@ -1,31 +1,29 @@
-﻿import React, { useState, useEffect } from "react";
+﻿import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/UserProfile.css";
-import profilePicture from "../assets/ProfilePic.jpg"; // Default profile picture
+import profilePicture from "../assets/ProfilePic.jpg";
+import Notification from "./Notification"; // Import the Notification component
 
-const InstructorProfile = ({ onLogout, onUpdateProfile }) => {
+const InstructorProfile = ({ onLogout }) => {
     const [instructor, setInstructor] = useState(null);
-    const [clientsCount, setClientsCount] = useState(0); // Store the number of clients
-    const [isEditing, setIsEditing] = useState(false);
-    const [error, setError] = useState(null); // Error state
-    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null); // Add success state
-
     const [formData, setFormData] = useState({
-        name: '',
-        surname: '',
-        email: '',
-        phone: '',
-        profilePicture: '',
+        name: "",
+        surname: "",
+        email: "",
+        phone: "",
+        profilePicture: ""
     });
+    const [notification, setNotification] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [showCancelEditing, setShowCancelEditing] = useState(false);
 
     useEffect(() => {
-        const fetchInstructorData = async () => {
+        const fetchData = async () => {
             try {
-                const instructorId = localStorage.getItem("userId");
-
-                const instructorRes = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}`);
-                const data = instructorRes.data;
+                const instructorId = localStorage.getItem("userId"); // or instructorId if stored separately
+                const res = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}`);
+                const data = res.data;
 
                 setInstructor({
                     name: data.name,
@@ -42,18 +40,14 @@ const InstructorProfile = ({ onLogout, onUpdateProfile }) => {
                     phone: data.phone,
                     profilePicture: data.photo || profilePicture
                 });
-
-                // Fetch the number of clients
-                const clientsCountRes = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}/clients/count`);
-                setClientsCount(clientsCountRes.data.clientCount);
-
+                setIsEditing(false); // Ensure not in edit mode on load
             } catch (err) {
-                console.error("Error fetching instructor data or clients:", err);
-                setError("Failed to load data.");
+                console.error("Error fetching instructor data:", err);
+                setNotification({ type: 'error', message: "Failed to load data." });
             }
         };
 
-        fetchInstructorData();
+        fetchData();
     }, []);
 
     const handleInputChange = (e) => {
@@ -61,74 +55,76 @@ const InstructorProfile = ({ onLogout, onUpdateProfile }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    useEffect(() => {
-        let timer;
-        if (successMessage) {
-            timer = setTimeout(() => {
-                setSuccessMessage(null);
-            }, 4000);
-        }
-        return () => clearTimeout(timer); // Cleanup on unmount
-    }, [successMessage]);
-
+    const hasChanges = () => {
+        return (
+            formData.name !== instructor?.name ||
+            formData.surname !== instructor?.surname ||
+            formData.email !== instructor?.email ||
+            formData.phone !== instructor?.phone ||
+            formData.profilePicture !== instructor?.photo
+        );
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-        setSuccessMessage(null);
-        const updatedData = {
-            name: formData.name,
-            surname: formData.surname,
-            email: formData.email,
-            phone: formData.phone,
-            photo: formData.profilePicture || profilePicture
-        };
 
-        // Check for changes before API call
-        const hasChanges =
-            formData.name !== instructor.name ||
-            formData.surname !== instructor.surname ||
-            formData.email !== instructor.email ||
-            formData.phone !== instructor.phone ||
-            formData.profilePicture !== instructor.photo;
+        // Check if there are no changes and show notification
+        if (!hasChanges()) {
+            setNotification({ type: 'info', message: "No changes were made." });
 
-        if (!hasChanges) {
-            setSuccessMessage("No changes were made");
-            return; // Stay in edit mode
+            // Clear the notification after a brief period
+            setTimeout(() => setNotification(null), 3000); // Reset after 3 seconds
+
+            return; // Prevent any further action
+        }
+
+        const validName = /^[a-zA-Z]+$/;
+        const phoneRegex = /^[0-9]{10}$/;
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+        if (!validName.test(formData.name) || !validName.test(formData.surname)) {
+            setNotification({ type: 'error', message: "Name and surname can only contain letters." });
+            setTimeout(() => setNotification(null), 3000); // Reset after 3 seconds
+            return;
+        }
+
+        if (!phoneRegex.test(formData.phone)) {
+            setNotification({ type: 'error', message: "Phone number must be 10 digits." });
+            setTimeout(() => setNotification(null), 3000); // Reset after 3 seconds
+            return;
+        }
+
+        if (!emailRegex.test(formData.email)) {
+            setNotification({ type: 'error', message: "Please enter a valid email address." });
+            setTimeout(() => setNotification(null), 3000); // Reset after 3 seconds
+            return;
         }
 
         try {
             const instructorId = localStorage.getItem("userId");
-            const response = await axios.put(
+            const updatedData = {
+                name: formData.name,
+                surname: formData.surname,
+                email: formData.email,
+                phone: formData.phone,
+                photo: formData.profilePicture || profilePicture
+            };
+            await axios.put(
                 `http://localhost:5017/api/instructors/update/${instructorId}`,
                 updatedData,
                 { headers: { "Content-Type": "application/json" } }
             );
-            const newInstructorData = {
-                ...instructor,
-                name: updatedData.name,
-                surname: updatedData.surname,
-                email: updatedData.email,
-                phone: updatedData.phone,
-                photo: updatedData.photo
-            };
-            setInstructor(newInstructorData);
-            setFormData({
-                ...formData,
-                ...updatedData,
-                profilePicture: updatedData.photo
-            });
 
-            setSuccessMessage("Changes saved successfully!");
+            setInstructor({ ...instructor, ...updatedData });
+            setNotification({ type: 'success', message: "Profile updated successfully!" });
+            setTimeout(() => setNotification(null), 3000); // Reset after 3 seconds
             setIsEditing(false);
         } catch (error) {
             console.error("Update failed:", error);
-            setError(
-                error.response?.data?.message ||
-                error.response?.data ||
-                "Failed to update profile. Please try again."
-            );
+            setNotification({ type: 'error', message: error.response?.data?.message || "Failed to update profile." });
+            setTimeout(() => setNotification(null), 3000); // Reset after 3 seconds
         }
     };
+
 
     const handleLogout = () => {
         setShowLogoutConfirm(true);
@@ -139,26 +135,64 @@ const InstructorProfile = ({ onLogout, onUpdateProfile }) => {
         setShowLogoutConfirm(false);
     };
 
-    if (!instructor) return <p>Loading profile...</p>;
+    const handleCancelEdit = () => {
+        if (hasChanges()) {
+            setShowCancelEditing(true);
+        } else {
+            setIsEditing(false);
+        }
+    };
+
+    const handleConfirmCancelEdit = () => {
+        setFormData({
+            name: instructor.name,
+            surname: instructor.surname,
+            email: instructor.email,
+            phone: instructor.phone,
+            profilePicture: instructor.photo || profilePicture
+        });
+        setIsEditing(false);
+        setShowCancelEditing(false);
+    };
+
+    if (!instructor) return <div className="loading-container">Loading profile...</div>;
 
     return (
         <div className="profile-container">
+            {notification && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={() => setNotification(null)}
+                />
+            )}
+
             {showLogoutConfirm && (
                 <div className="logout-modal-overlay">
                     <div className="logout-modal">
                         <h3>Are you sure you want to log out?</h3>
                         <div className="logout-modal-buttons">
-                            <button
-                                onClick={handleLogoutConfirm}
-                                className="logout-confirm-btn"
-                            >
+                            <button onClick={handleLogoutConfirm} className="logout-confirm-btn">
                                 Yes, Log Out
                             </button>
-                            <button
-                                onClick={() => setShowLogoutConfirm(false)}
-                                className="logout-cancel-btn"
-                            >
+                            <button onClick={() => setShowLogoutConfirm(false)} className="logout-cancel-btn">
                                 Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showCancelEditing && (
+                <div className="logout-modal-overlay">
+                    <div className="logout-modal">
+                        <h3>Are you sure you want to discard changes?</h3>
+                        <div className="logout-modal-buttons">
+                            <button onClick={handleConfirmCancelEdit} className="logout-confirm-btn">
+                                Yes, Discard Changes
+                            </button>
+                            <button onClick={() => setShowCancelEditing(false)} className="logout-cancel-btn">
+                                No, Keep Editing
                             </button>
                         </div>
                     </div>
@@ -168,30 +202,10 @@ const InstructorProfile = ({ onLogout, onUpdateProfile }) => {
             <div className="profile-header">
                 <h1>Instructor Profile</h1>
                 <div className="logout-btn-container">
-                    <button
-                        onClick={handleLogout}
-                        className="logout-btn"
-                    >
+                    <button onClick={handleLogout} className="logout-btn">
                         Log Out
                     </button>
                 </div>
-            </div>
-
-            <div className="message-container">
-                {error && (
-                    <div className="notification error-notification fade-out">
-                        <span className="notification-icon">⚠️</span>
-                        <span>{typeof error === 'object' ? JSON.stringify(error) : error}</span>
-                    </div>
-                )}
-                {successMessage && (
-                    <div className={`notification fade-out ${successMessage === "No changes were made" ? "info-notification" : "success-notification"}`}>
-                        <span className="notification-icon">
-                            {successMessage === "No changes were made" ? "ℹ️" : "✓"}
-                        </span>
-                        <span>{successMessage}</span>
-                    </div>
-                )}
             </div>
 
             <div className="profile-content">
@@ -205,86 +219,50 @@ const InstructorProfile = ({ onLogout, onUpdateProfile }) => {
                             />
                         </div>
                         <div className="profile-details">
-                            <h2>{formData.name + ' ' + formData.surname}</h2>
+                            <h2>{`${formData.name} ${formData.surname}`}</h2>
                             <p><strong>Email:</strong> {formData.email}</p>
-                            <p><strong>Phone:</strong> {formData.phone}</p>
-                            <p><strong>Clients:</strong> {clientsCount}</p> {/* Display client count */}
-                            <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
+                            <p><strong>Phone:</strong> {formData.phone || 'Not provided'}</p>
+                        </div>
+                        <div className="profile-buttons">
+                            <button onClick={() => setIsEditing(true)} className="edit-btn">
+                                Edit Profile
+                            </button>
                         </div>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="profile-edit-form">
                         <div className="form-group">
                             <label>Name</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />
                         </div>
                         <div className="form-group">
                             <label>Surname</label>
-                            <input
-                                type="text"
-                                name="surname"
-                                value={formData.surname}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="surname" value={formData.surname} onChange={handleInputChange} required />
                         </div>
                         <div className="form-group">
                             <label>Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
                         </div>
                         <div className="form-group">
                             <label>Phone Number</label>
-                            <input
-                                type="text"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                required
-                            />
+                            <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} required />
                         </div>
                         <div className="form-group">
                             <label>Profile Picture URL</label>
-                            <input
-                                type="url"
-                                name="profilePicture"
-                                value={formData.profilePicture}
-                                onChange={handleInputChange}
-                                placeholder="https://example.com/image.jpg"
-                            />
+                            <input type="url" name="profilePicture" value={formData.profilePicture} onChange={handleInputChange} />
                         </div>
 
                         <div className="form-actions">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setFormData({
-                                            name: instructor.name,
-                                            surname: instructor.surname,
-                                            email: instructor.email,
-                                            phone: instructor.phone,
-                                            profilePicture: instructor.photo || profilePicture,
-                                        });
-                                        setIsEditing(false);
-                                    }}
-                                    className="cancel-btn"
-                                >
-                                    Cancel
-                                </button>
-                            <button type="submit" className="save-btn">
-                                Save Changes
+                            <button
+                                type="button"
+                                className="cancel-btn"
+                                onClick={handleCancelEdit}
+                            >
+                                Cancel
                             </button>
+                                <button type="submit" className="save-btn">
+                                    Save Changes
+                                </button>
                         </div>
                     </form>
                 )}

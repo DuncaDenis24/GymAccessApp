@@ -25,7 +25,7 @@
     right: 5%;
 }
 
-
+/* Inactive state for login */
 .inactive {
     background: #ccc;
     color: gray;
@@ -67,3 +67,4 @@
     .toggle-text:hover {
         text-decoration: underline;
     }
+

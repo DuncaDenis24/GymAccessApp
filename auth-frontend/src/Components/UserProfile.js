@@ -1,39 +1,43 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Notification from './Notification';
 import "../styles/UserProfile.css";
-import profilePicture from "../assets/ProfilePic.jpg"; // Default profile picture
+import profilePicture from "../assets/ProfilePic.jpg";
 
-const UserProfile = ({ onLogout, onUpdateProfile }) => {
+const UserProfile = ({ onLogout }) => {
+    // State management
     const [user, setUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [error, setError] = useState(null); // Error state
-    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null); // Add success state
+    const [notification, setNotification] = useState(null);
     const [membershipDetails, setMembershipDetails] = useState(null);
     const [instructorDetails, setInstructorDetails] = useState(null);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [showCancelMembership, setShowCancelMembership] = useState(false);
     const [showMembership, setShowMembership] = useState(false);
     const [showCancelEditing, setShowCancelEditing] = useState(false);
 
+    // Form data state
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
         email: '',
         phone: '',
-      // membershipType: '',
         profilePicture: '',
         joinDate: ''
     });
-    const [originalUserData, setOriginalUserData] = useState(null);
 
+    // Validation regex
+    const phoneRegex = /^[0-9]{10}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    // Fetch user data on component mount
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const userId = localStorage.getItem("userId");
                 const res = await axios.get(`http://localhost:5017/api/user/get/${userId}`);
                 const data = res.data;
-
 
                 setUser({
                     ...data,
@@ -42,8 +46,9 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                     email: data.email,
                     phone: data.phone,
                     photo: data.photo,
-                   joinDate: data.joinDate ? data.joinDate.split('T')[0] : ''
+                    joinDate: data.joinDate ? data.joinDate.split('T')[0] : ''
                 });
+
                 setFormData({
                     name: data.name,
                     surname: data.surname,
@@ -52,68 +57,31 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                     profilePicture: data.photo || profilePicture,
                     joinDate: data.joinDate ? data.joinDate.split('T')[0] : ''
                 });
-                console.log("Fetched user data:", data);
+
                 if (data.membership) {
-                    setMembershipDetails(data.membership); // Folosește direct datele din răspuns
+                    setMembershipDetails(data.membership);
                 }
 
-                // Fetch instructor
                 if (data.instructor) {
-                    setInstructorDetails(data.instructor); // Folosește direct datele din răspuns
+                    setInstructorDetails(data.instructor);
                 }
-                console.log("Fetched user data:", data);
+
             } catch (err) {
                 console.error("Failed to fetch user data", err);
+                setNotification({ type: 'error', message: "Failed to load profile data" });
             }
         };
         fetchUser();
     }, []);
+
+    // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-
-        if (name === "phone" && !phoneRegex.test(value)) {
-            setError("Phone number must be 10 digits.");
-        } else if (name === "email" && !validateEmail(value)) {
-            setError("Please enter a valid email.");
-        } else {
-            setError(null); // Reset error if input is valid
-        }
     };
-    useEffect(() => {
-        let timer;
-        if (successMessage) {
-            timer = setTimeout(() => {
-                setSuccessMessage(null);
-            }, 4000);
-        }
-        return () => clearTimeout(timer); // Cleanup on unmount
-    }, [successMessage]);
-    const phoneRegex = /^[0-9]{10}$/; // Adjust based on your needs
 
-    const handleCancelMembership = async () => {
-        try {
-            const userId = localStorage.getItem("userId");
-            const response = await axios.put(`http://localhost:5017/api/memberships/cancel/${userId}`, null, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            // Update UI
-            setMembershipDetails(null);
-            setUser(prev => ({
-                ...prev,
-                membership: null,
-                membership_Id: null
-            }));
-            setSuccessMessage("Membership cancelled successfully.");
-            setShowMembership(false);
-        } catch (error) {
-            console.error("Failed to cancel membership", error);
-            setError("Failed to cancel membership. Please try again.");
-        }
-    };
-    const changes = () => {
+    // Check if form has changes
+    const hasChanges = () => {
         return (
             formData.name !== user.name ||
             formData.surname !== user.surname ||
@@ -123,90 +91,72 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
         );
     };
 
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-        setSuccessMessage(null);
+
+        // Validate inputs
         if (!phoneRegex.test(formData.phone)) {
-            setError('Please enter a valid phone number (10 digits).');
+            setNotification({ type: 'error', message: "Please enter a valid phone number (10 digits)" });
             return;
         }
-        if (!validateEmail(formData.email)) {
-            setError("Please enter a valid email address.");
+
+        if (!emailRegex.test(formData.email)) {
+            setNotification({ type: 'error', message: "Please enter a valid email address" });
             return;
         }
-        const updatedData = {
-            Name: formData.name,
-            Surname: formData.surname,
-            Email: formData.email,
-            Phone: formData.phone,
-            Photo: formData.profilePicture
-        };
-            // Check for changes before API call
-            const hasChanges =
-                formData.name !== user.name ||
-                formData.surname !== user.surname ||
-                formData.email !== user.email ||
-                formData.phone !== user.phone ||
-                formData.profilePicture !== (user.photo || profilePicture);
 
-            if (!hasChanges) {
-                setSuccessMessage("No changes were made");
-                return; // Stay in edit mode
-            }
+        if (!hasChanges()) {
+            setNotification({ type: 'info', message: "No changes were made" });
+            return;
+        }
 
-            try {
-                const userId = localStorage.getItem("userId");
-                const response = await axios.put(
-                    `http://localhost:5017/api/user/update/${userId}`,
-                    updatedData
-                );
-                const newUserData = {
-                    ...user,
-                    name: updatedData.Name,
-                    surname: updatedData.Surname,
-                    email: updatedData.Email,
-                    phone: updatedData.Phone,
-                    photo: updatedData.Photo
-                };
-                setUser(newUserData); // Update user state
-                setFormData({
-                    ...formData,
-                    ...updatedData,
-                    profilePicture: updatedData.Photo
-                });
+        try {
+            const userId = localStorage.getItem("userId");
+            const updatedData = {
+                Name: formData.name,
+                Surname: formData.surname,
+                Email: formData.email,
+                Phone: formData.phone,
+                Photo: formData.profilePicture
+            };
 
-                setSuccessMessage("Changes saved successfully!");
-                setIsEditing(false);
-            } catch (error) {
-                console.error("Update failed:", error);
-                setError(
-                    error.response?.data?.message ||
-                    error.response?.data ||
-                    "Failed to update profile. Please try again."
-                );
-            }
-        };
-    const validateEmail = (email) => {
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        return emailRegex.test(email);
+            await axios.put(
+                `http://localhost:5017/api/user/update/${userId}`,
+                updatedData
+            );
+
+            // Update user state
+            setUser({
+                ...user,
+                name: updatedData.Name,
+                surname: updatedData.Surname,
+                email: updatedData.Email,
+                phone: updatedData.Phone,
+                photo: updatedData.Photo
+            });
+
+            setNotification({ type: 'success', message: "Profile updated successfully!" });
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Update failed:", error);
+            setNotification({
+                type: 'error',
+                message: error.response?.data?.message || "Failed to update profile"
+            });
+        }
     };
 
+    // Calculate remaining membership months
     const calculateMonthsLeft = (startDate, endDate) => {
-        if (!startDate || !endDate) {
-            return 0; // Return 0 if any of the dates is null or undefined
-        }
+        if (!startDate || !endDate) return 0;
 
         const start = new Date(startDate);
         const end = new Date(endDate);
         const currentDate = new Date();
 
-        // If the current date is after the end date, return 0 months
-        if (currentDate > end) {
-            return 0;
-        }
+        if (currentDate > end) return 0;
 
-        // Calculate the difference in months
         const yearsDifference = end.getFullYear() - currentDate.getFullYear();
         const monthsDifference = end.getMonth() - currentDate.getMonth();
         const totalMonthsLeft = yearsDifference * 12 + monthsDifference;
@@ -214,15 +164,42 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
         return totalMonthsLeft >= 0 ? totalMonthsLeft : 0;
     };
 
+    // Handle membership cancellation
+    const handleCancelMembership = async () => {
+        try {
+            const userId = localStorage.getItem("userId");
+            await axios.put(`http://localhost:5017/api/memberships/cancel/${userId}`, null, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            setMembershipDetails(null);
+            setUser(prev => ({ ...prev, membership: null }));
+            setNotification({ type: 'success', message: "Membership cancelled successfully" });
+            setShowMembership(false);
+        } catch (error) {
+            console.error("Failed to cancel membership", error);
+            setNotification({ type: 'error', message: "Failed to cancel membership" });
+        }
+    };
+
     const monthsLeft = membershipDetails && membershipDetails.endDate
         ? calculateMonthsLeft(membershipDetails.startDate, membershipDetails.endDate)
-        : 'No membership';
+        : 0;
 
-    if (!user) return <p>Loading profile...</p>;
-
+    if (!user) return <div className="loading-container">Loading profile...</div>;
 
     return (
         <div className="profile-container">
+            {/* Notification Component */}
+            {notification && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={() => setNotification(null)}
+                />
+            )}
+
+            {/* Logout Confirmation Modal */}
             {showLogoutConfirm && (
                 <div className="logout-modal-overlay">
                     <div className="logout-modal">
@@ -247,11 +224,13 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                     </div>
                 </div>
             )}
+
+            {/* Membership Cancellation Modal */}
             {showCancelMembership && (
                 <div className="logout-modal-overlay">
                     <div className="logout-modal">
                         <h3>Are you sure you want to cancel this membership?</h3>
-                        <p> You still have {monthsLeft} months left</p>
+                        {monthsLeft > 0 && <p>You still have {monthsLeft} months left</p>}
                         <div className="logout-modal-buttons">
                             <button
                                 onClick={() => {
@@ -260,7 +239,7 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                                 }}
                                 className="logout-confirm-btn"
                             >
-                                Yes, Cancel it
+                                Yes, Cancel It
                             </button>
                             <button
                                 onClick={() => setShowCancelMembership(false)}
@@ -272,6 +251,8 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                     </div>
                 </div>
             )}
+
+            {/* Cancel Editing Modal */}
             {showCancelEditing && (
                 <div className="logout-modal-overlay">
                     <div className="logout-modal">
@@ -292,19 +273,20 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                                 }}
                                 className="logout-confirm-btn"
                             >
-                                Yes, discard changes
+                                Yes, Discard Changes
                             </button>
                             <button
                                 onClick={() => setShowCancelEditing(false)}
                                 className="logout-cancel-btn"
                             >
-                                No, keep editing
+                                No, Keep Editing
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* Profile Header */}
             <div className="profile-header">
                 <h1>My Gym Profile</h1>
                 <div className="logout-btn-container">
@@ -315,29 +297,12 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                         Log Out
                     </button>
                 </div>
-                </div>
-            
+            </div>
+
+            {/* Profile Content */}
             <div className="profile-content">
-                <div className="message-container">
-                    {error && (
-                        <div className="notification error-notification fade-out">
-                            <span className="notification-icon">⚠️</span>
-                            <span>{typeof error === 'object' ? JSON.stringify(error) : error}</span>
-                        </div>
-                    )}
-                    {successMessage && (
-                        <div className={`notification fade-out ${successMessage === "No changes were made"
-                                ? "info-notification"
-                                : "success-notification"
-                            }`}>
-                            <span className="notification-icon">
-                                {successMessage === "No changes were made" ? "ℹ️" : "✓"}
-                            </span>
-                            <span>{successMessage}</span>
-                        </div>
-                    )}
-                </div>
                 {!isEditing ? (
+                    // View Mode
                     <div className="profile-view">
                         <div className="avatar-section">
                             <img
@@ -347,56 +312,69 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                             />
                         </div>
                         <div className="profile-details">
-                            <h2>{formData.name + ' ' + formData.surname}</h2>
+                            <h2>{`${formData.name} ${formData.surname}`}</h2>
                             <p><strong>Email:</strong> {formData.email}</p>
-                            {/* Aici afisam Membership daca exista */}
+                            <p><strong>Phone:</strong> {formData.phone || 'Not provided'}</p>
                             <p><strong>Membership:</strong> {membershipDetails ? membershipDetails.membershipType : 'None'}</p>
-                            <p><strong>Gym Access Join:</strong> {formData.joinDate}</p>
+                            <p><strong>Join Date:</strong> {formData.joinDate}</p>
                         </div>
                         <div className="profile-buttons">
-                            <button onClick={() => setIsEditing(true)} className="edit-btn">Edit Profile</button>
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="edit-btn"
+                            >
+                                Edit Profile
+                            </button>
 
-                            {membershipDetails && (
-                                <button className="details-btn" onClick={() => setShowMembership(prev => !prev)}>
-                                    {showMembership ? "Hide Membership Details" : "See Membership Details"}
+                            {membershipDetails ? (
+                                <button
+                                    className="details-btn"
+                                    onClick={() => setShowMembership(!showMembership)}
+                                >
+                                    {showMembership ? "Hide Details" : "Show Membership"}
                                 </button>
-                            )}
-                            {!membershipDetails && (
+                            ) : (
                                 <Link to="/memberships">
                                     <button className="details-btn">
-                                        Go to Memberships Plan
+                                        Get Membership
                                     </button>
                                 </Link>
-                            ) }
+                            )}
                         </div>
 
-                        {/* Aici adaugam sectiunea de Membership Details */}
+                        {/* Membership Details Section */}
                         {showMembership && membershipDetails && (
                             <div className="membership-card">
                                 <h3>Membership Details</h3>
                                 <p><strong>Type:</strong> {membershipDetails.membershipType}</p>
                                 <p><strong>Price:</strong> ${membershipDetails.price}</p>
-                                <p><strong>Start Date:</strong> {membershipDetails.startDate ? membershipDetails.startDate.split('T')[0] : ''}</p>
-                                <p><strong>End Date:</strong> {membershipDetails.endDate ? membershipDetails.endDate.split('T')[0] : ''}</p>
+                                <p><strong>Start Date:</strong> {membershipDetails.startDate.split('T')[0]}</p>
+                                <p><strong>End Date:</strong> {membershipDetails.endDate.split('T')[0]}</p>
+                                <p><strong>Time Remaining:</strong> {monthsLeft} months</p>
 
-                                {/* Aici afisam Instructorul */}
                                 {instructorDetails && (
-                                    <><p><strong>Instructor:</strong> {instructorDetails.instructorName}</p><p><strong>Instructor Email:</strong> {instructorDetails.instructorEmail}</p><p><strong>Instructor Phone:</strong> {instructorDetails.instructorPhone}</p></>
+                                    <>
+                                        <h4>Your Instructor</h4>
+                                        <p><strong>Name:</strong> {instructorDetails.instructorName}</p>
+                                        <p><strong>Email:</strong> {instructorDetails.instructorEmail}</p>
+                                        <p><strong>Phone:</strong> {instructorDetails.instructorPhone}</p>
+                                    </>
                                 )}
+
                                 <button
                                     className="cancel-membership-btn"
-                                    onClick={()=>setShowCancelMembership(true)}
+                                    onClick={() => setShowCancelMembership(true)}
                                 >
                                     Cancel Membership
                                 </button>
                             </div>
                         )}
-
                     </div>
                 ) : (
+                    // Edit Mode
                     <form onSubmit={handleSubmit} className="profile-edit-form">
                         <div className="form-group">
-                            <label>Name</label>
+                            <label>First Name</label>
                             <input
                                 type="text"
                                 name="name"
@@ -406,7 +384,7 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Surname</label>
+                            <label>Last Name</label>
                             <input
                                 type="text"
                                 name="surname"
@@ -428,10 +406,11 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                         <div className="form-group">
                             <label>Phone Number</label>
                             <input
-                                type="text"
+                                type="tel"
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
+                                placeholder="10-digit number"
                                 required
                             />
                         </div>
@@ -447,27 +426,19 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                         </div>
 
                         <div className="form-actions">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (changes()) {
-                                            setShowCancelEditing(true)
-                                        }
-                                        else {
-                                            setIsEditing(false)
-                                        }
-                                    }}
-                                    className="cancel-btn"
-                                >
-                                    Cancel
-                                </button>
+                            <button
+                                type="button"
+                                onClick={() => hasChanges() ? setShowCancelEditing(true) : setIsEditing(false)}
+                                className="cancel-btn"
+                            >
+                                Cancel
+                            </button>
                             <button type="submit" className="save-btn">
                                 Save Changes
                             </button>
                         </div>
                     </form>
                 )}
-
             </div>
         </div>
     );
