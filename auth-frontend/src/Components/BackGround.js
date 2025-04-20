@@ -6,7 +6,7 @@ import gym2 from "../assets/gym2.jpg";
 const Background = () => {
     return (
         <div className="background-container">
-            <div className="overlay">
+            <div className="overlay-background">
                 <h1>Gym Access App</h1>
                 <p>Welcome to our gym management system!</p>
                 <p>We provide the best gym experience with:</p>

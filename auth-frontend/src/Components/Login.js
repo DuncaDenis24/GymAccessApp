@@ -133,7 +133,7 @@ const Login = ({ onLoginSuccess }) => {
                 />
             )}
 
-            <div className="login-container">
+            <div className="login-box-container">
                 <h2>{isSignUp ? (isInstructor ? "Instructor Sign Up" : "User Sign Up") : (isInstructor ? "Instructor Login" : "User Login")}</h2>
                 <form onSubmit={handleSubmit}>
                     {isSignUp && (
@@ -167,10 +167,10 @@ const Login = ({ onLoginSuccess }) => {
                     </button>
                 </form>
 
-                <p onClick={() => setIsSignUp(!isSignUp)} className="toggle-text">
+                <p onClick={() => setIsSignUp(!isSignUp)} className="login-box-toggle-text">
                     {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign up"}
                 </p>
-                <p onClick={() => setIsInstructor(!isInstructor)} className="toggle-text">
+                <p onClick={() => setIsInstructor(!isInstructor)} className="login-box-toggle-text">
                     {isInstructor ? "Switch to User Mode" : "Login/Register as Instructor"}
                 </p>
             </div>

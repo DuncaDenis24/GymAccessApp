@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from "framer-motion";
 import axios from 'axios';
 import Notification from './Notification';
 import "../styles/UserProfile.css";
@@ -17,6 +18,7 @@ const UserProfile = ({ onLogout }) => {
     const [showMembership, setShowMembership] = useState(false);
     const [showCancelEditing, setShowCancelEditing] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
 
 
     // Form data state
@@ -222,7 +224,12 @@ const UserProfile = ({ onLogout }) => {
     if (!user) return <div className="loading-container">Loading profile...</div>;
 
     return (
-        <div className="profile-container">
+        <div className="profile-page">
+            <div className="profile-container body-profile">
+            <div className="dumbbell-float"></div>
+            <div className="dumbbell-float"></div>
+            <div className="dumbbell-float"></div>
+            <div className="dumbbell-float"></div>
             {/* Notification Component */}
             {notification && (
                 <Notification
@@ -355,154 +362,183 @@ const UserProfile = ({ onLogout }) => {
                     </button>
                 </div>
             </div>
-
-            {/* Profile Content */}
-            <div className="profile-content">
-                {!isEditing ? (
-                    // View Mode
-                    <div className="profile-view">
-                        <div className="avatar-section">
-                            <img
-                                src={formData.profilePicture || profilePicture}
-                                alt="Profile"
-                                className="profile-avatar"
-                            />
-                        </div>
-                        <div className="profile-details">
-                            <h2>{`${formData.name} ${formData.surname}`}</h2>
-                            <p><strong>Email:</strong> {formData.email}</p>
-                            <p><strong>Phone:</strong> {formData.phone || 'Not provided'}</p>
-                            <p><strong>Membership:</strong> {membershipDetails ? membershipDetails.membershipType : 'None'}</p>
-                            <p><strong>Join Date:</strong> {formData.joinDate}</p>
-                        </div>
-                        <div className="profile-buttons">
-                            <button
-                                onClick={() => setIsEditing(true)}
-                                className="edit-btn"
+           
+                <div className="profile-content">
+                    <AnimatePresence mode="wait">
+                        {!isEditing ? (
+                            // View Mode - Animated
+                            <motion.div
+                                key="view-mode"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                transition={{ duration: 0.8 }}
+                                className="profile-view"
                             >
-                                Edit Profile
-                            </button>
-
-                            {membershipDetails ? (
-                                <button
-                                    className="details-btn"
-                                    onClick={() => setShowMembership(!showMembership)}
-                                >
-                                    {showMembership ? "Hide Details" : "Show Membership"}
-                                </button>
-                            ) : (
-                                <Link to="/memberships">
-                                    <button className="details-btn">
-                                        Get Membership
+                                {/* View mode content remains the same */}
+                                <div className="avatar-section">
+                                    <img
+                                        src={formData.profilePicture || profilePicture}
+                                        alt="Profile"
+                                        className="profile-avatar"
+                                    />
+                                </div>
+                                <div className="profile-details">
+                                    <h2>{`${formData.name} ${formData.surname}`}</h2>
+                                    <p><strong>Email:</strong> {formData.email}</p>
+                                    <p><strong>Phone:</strong> {formData.phone || 'Not provided'}</p>
+                                    <p><strong>Membership:</strong> {membershipDetails ? membershipDetails.membershipType : 'None'}</p>
+                                    <p><strong>Join Date:</strong> {formData.joinDate}</p>
+                                </div>
+                                <div className="profile-buttons">
+                                    <button
+                                        onClick={() => setIsEditing(true)}
+                                        className="edit-btn"
+                                    >
+                                        Edit Profile
                                     </button>
-                                </Link>
-                            )}
-                            <button
-                                onClick={() => setShowDeleteConfirm(true)}
-                                className="delete-btn"
-                            > Delete Account
-                            </button>
-                        </div>
 
+                                    {membershipDetails ? (
+                                        <button
+                                            className="details-btn"
+                                            onClick={() => setShowMembership(!showMembership)}
+                                        >
+                                            {showMembership ? "Hide Details" : "Show Membership"}
+                                        </button>
+                                    ) : (
+                                        <Link to="/memberships">
+                                            <button className="details-btn">
+                                                Get Membership
+                                            </button>
+                                        </Link>
+                                    )}
+                                    <button
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        className="delete-btn"
+                                    >
+                                        Delete Account
+                                    </button>
+                                </div>
 
-                        {/* Membership Details Section */}
-                        {showMembership && membershipDetails && (
-                            <div className="membership-card">
-                                <h3>Membership Details</h3>
-                                <p><strong>Type:</strong> {membershipDetails.membershipType}</p>
-                                <p><strong>Price:</strong> ${membershipDetails.price}</p>
-                                <p><strong>Start Date:</strong> {membershipDetails.startDate.split('T')[0]}</p>
-                                <p><strong>End Date:</strong> {membershipDetails.endDate.split('T')[0]}</p>
-                                <p><strong>Time Remaining:</strong> {monthsLeft} months</p>
+                                {/* Membership section remains the same */}
+                                <div className="membership-section" style={{ overflow: 'hidden' }}>
+                                    <AnimatePresence mode="wait">
+                                        {showMembership && membershipDetails && (
+                                            <motion.div
+                                                key="membership-card"
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                transition={{ duration: 1 }}
+                                                className="membership-card"
+                                            >
+                                                <h3>Membership Details</h3>
+                                                <p><strong>Type:</strong> {membershipDetails.membershipType}</p>
+                                                <p><strong>Price:</strong> ${membershipDetails.price}</p>
+                                                <p><strong>Start Date:</strong> {membershipDetails.startDate.split('T')[0]}</p>
+                                                <p><strong>End Date:</strong> {membershipDetails.endDate.split('T')[0]}</p>
+                                                <p><strong>Time Remaining:</strong> {monthsLeft} months</p>
 
-                                {instructorDetails && (
-                                    <>
-                                        <h4>Your Instructor</h4>
-                                        <p><strong>Name:</strong> {instructorDetails.instructorName}</p>
-                                        <p><strong>Email:</strong> {instructorDetails.instructorEmail}</p>
-                                        <p><strong>Phone:</strong> {instructorDetails.instructorPhone}</p>
-                                    </>
-                                )}
+                                                {instructorDetails && (
+                                                    <>
+                                                        <h4>Your Instructor</h4>
+                                                        <p><strong>Name:</strong> {instructorDetails.instructorName}</p>
+                                                        <p><strong>Email:</strong> {instructorDetails.instructorEmail}</p>
+                                                        <p><strong>Phone:</strong> {instructorDetails.instructorPhone}</p>
+                                                    </>
+                                                )}
 
-                                <button
-                                    className="cancel-membership-btn"
-                                    onClick={() => setShowCancelMembership(true)}
-                                >
-                                    Cancel Membership
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    // Edit Mode
-                    <form onSubmit={handleSubmit} className="profile-edit-form">
-                        <div className="form-group">
-                            <label>First Name</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Last Name</label>
-                            <input
-                                type="text"
-                                name="surname"
-                                value={formData.surname}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Phone Number</label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                placeholder="10-digit number"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Profile Picture URL</label>
-                            <input
-                                type="url"
-                                name="profilePicture"
-                                value={formData.profilePicture}
-                                onChange={handleInputChange}
-                                placeholder="https://example.com/image.jpg"
-                            />
-                        </div>
-
-                        <div className="form-actions">
-                            <button
-                                type="button"
-                                onClick={() => hasChanges() ? setShowCancelEditing(true) : setIsEditing(false)}
-                                className="cancel-btn"
+                                                <button
+                                                    className="cancel-membership-btn"
+                                                    onClick={() => setShowCancelMembership(true)}
+                                                >
+                                                    Cancel Membership
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            // Edit Mode - Animated
+                            <motion.form
+                                key="edit-mode"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3 }}
+                                onSubmit={handleSubmit}
+                                className="profile-edit-form"
                             >
-                                Cancel
-                            </button>
-                            <button type="submit" className="save-btn">
-                                Save Changes
-                            </button>
-                        </div>
-                    </form>
-                )}
-            </div>
+                                {/* Edit form content remains the same */}
+                                <div className="form-group">
+                                    <label>First Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Last Name</label>
+                                    <input
+                                        type="text"
+                                        name="surname"
+                                        value={formData.surname}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
+                                        placeholder="10-digit number"
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Profile Picture URL</label>
+                                    <input
+                                        type="url"
+                                        name="profilePicture"
+                                        value={formData.profilePicture}
+                                        onChange={handleInputChange}
+                                        placeholder="https://example.com/image.jpg"
+                                    />
+                                </div>
+                                <div>
+                                    <button type="submit" className="save-btn">
+                                        Save Changes
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => hasChanges() ? setShowCancelEditing(true) : setIsEditing(false)}
+                                        className="cancel-btn"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </motion.form>
+                        )}
+                    </AnimatePresence>
+                </div> 
+         </div>
         </div>
     );
 };

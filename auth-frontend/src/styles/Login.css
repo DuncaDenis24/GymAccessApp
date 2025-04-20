@@ -1,70 +1,57 @@
-/* Center the login form */
-.login-container {
+/* Scoped login container */
+.login-box-container {
     position: fixed;
-    width: clamp(10px, 30%, 400px); /* Responsive width range */
+    width: clamp(10px, 20vw, 400px);
     max-width: 100%;
-    padding: clamp(0.5rem, 3vw, 5rem); /* Responsive padding */
-    background: #ff0000;
-    border-radius: 10px;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: all 0.3s ease;
-    top: 2vh; /* Viewport-relative positioning */
-    right: 2vw;
-    margin: 0;
-    z-index: 1000;
-    width: 20vw;
-    padding: 2vw;
+    padding: clamp(0.5rem, 2vw, 5rem);
     background: #ff0000;
     border-radius: 1vw;
-    box-shadow: 0 0 1vw rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.1);
     text-align: center;
-    transition: all 0.3s;
-    position: absolute;
+    transition: all 0.3s ease;
     top: 5%;
     right: 5%;
+    z-index: 1000;
 }
 
-/* Inactive state for login */
-.inactive {
-    background: #ccc;
-    color: gray;
-}
-
-/* Form input fields */
-.login-container input {
-    width: 100%;
-    padding: 0.3vw;
-    margin: 1vh 0;
-    border: 1px solid #ccc;
-    border-radius: 0.5vw;
-}
-
-/* Submit button */
-.login-container button {
-    width: 70%;
-    padding: 0.7vw;
-    background-color: #000;
-    color: white;
-    border: none;
-    border-radius: 0.7vw;
-    cursor: pointer;
-    font-size: 1.0vw;
-    margin-top: 1vh;
-}
-
-    .login-container button:hover {
-        background-color: darkred;
+    .login-box-container.inactive {
+        background: #ccc;
+        color: gray;
     }
 
-.toggle-text {
+    .login-box-container input {
+        width: 100%;
+        padding: 0.3vw;
+        margin: 1vh 0;
+        border: 1px solid #ccc;
+        border-radius: 0.5vw;
+    }
+
+    .login-box-container button {
+        width: 70%;
+        padding: 0.7vw;
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 0.7vw;
+        cursor: pointer;
+        font-size: 1.0vw;
+        margin-top: 1vh;
+        transition: background-color 0.3s;
+    }
+
+        .login-box-container button:hover {
+            background-color: darkred;
+        }
+
+.login-box-toggle-text {
     margin-top: 0.3vw;
     text-align: center;
     color: #000000;
     cursor: pointer;
+    transition: text-decoration 0.2s;
 }
 
-    .toggle-text:hover {
+    .login-box-toggle-text:hover {
         text-decoration: underline;
     }
-
