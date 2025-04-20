@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿//eslint-disable-next-line
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
 import axios from 'axios';
@@ -42,6 +43,7 @@ const UserProfile = ({ onLogout }) => {
                 const userId = localStorage.getItem("userId");
                 const res = await axios.get(`https://localhost:7253/api/user/get/${userId}`);
                 const data = res.data;
+
 
                 setUser({
                     ...data,
@@ -221,7 +223,9 @@ const UserProfile = ({ onLogout }) => {
         ? calculateMonthsLeft(membershipDetails.startDate, membershipDetails.endDate)
         : 0;
 
-    if (!user) return <div className="loading-container">Loading profile...</div>;
+    if (!user) return <div className="loading-overlay">
+        <div className="dumbbell-loader"></div>
+    </div>
 
     return (
         <div className="profile-page">

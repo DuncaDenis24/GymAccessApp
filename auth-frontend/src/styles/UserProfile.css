@@ -20,12 +20,12 @@
 
     .profile-page .body-profile::before {
         left: 0;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%232c3e50" cx="60" cy="50" r="40"/><circle fill="none" stroke="white" stroke-width="3" cx="60" cy="50" r="30"/><circle fill="none" stroke="white" stroke-width="2" cx="60" cy="50" r="25"/><text fill="white" font-family="Arial" font-weight="bold" font-size="12" text-anchor="middle" x="60" y="53">50kg</text><rect fill="%232c3e50" x="55" y="30" width="10" height="15" rx="2"/></svg>');
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%232c3e50" cx="60" cy="50" r="40"/><circle fill="none" stroke="white" strokeWidth="3" cx="60" cy="50" r="30"/><circle fill="none" stroke="white" strokeWidth="2" cx="60" cy="50" r="25"/><text fill="white" font-family="Arial" font-weight="bold" font-size="12" text-anchor="middle" x="60" y="53">50kg</text><rect fill="%232c3e50" x="55" y="30" width="10" height="15" rx="2"/></svg>');
     }
 
     .profile-page .body-profile::after {
         right: 0;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%232c3e50" cx="50" cy="50" r="40"/><circle fill="none" stroke="white" stroke-width="3" cx="50" cy="50" r="30"/><circle fill="none" stroke="white" stroke-width="2" cx="50" cy="50" r="25"/><text fill="white" font-family="Arial" font-weight="bold" font-size="12" text-anchor="middle" x="50" y="53">20kg</text><rect fill="%232c3e50" x="45" y="30" width="10" height="15" rx="2"/></svg>');
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%232c3e50" cx="50" cy="50" r="40"/><circle fill="none" stroke="white" strokeWidth="3" cx="50" cy="50" r="30"/><circle fill="none" stroke="white" strokeWidth="2" cx="50" cy="50" r="25"/><text fill="white" font-family="Arial" font-weight="bold" font-size="12" text-anchor="middle" x="50" y="53">20kg</text><rect fill="%232c3e50" x="45" y="30" width="10" height="15" rx="2"/></svg>');
     }
 .dumbbell-float {
     position: fixed;
@@ -499,3 +499,36 @@
     .logout-cancel-btn:hover {
         background: linear-gradient(135deg, #95a5a6 0%, #bdc3c7 100%);
     }
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(245, 247, 250, 0.85); /* fundal semitransparent */
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.dumbbell-loader {
+    width: 80px;
+    height: 80px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60"><path fill="%23d32f2f" d="M0,25 L40,25 L40,15 C40,5 50,0 60,0 C70,0 80,5 80,15 L80,45 C80,55 70,60 60,60 C50,60 40,55 40,45 L40,35 L0,35 Z M200,25 L160,25 L160,15 C160,5 150,0 140,0 C130,0 120,5 120,15 L120,45 C120,55 130,60 140,60 C150,60 160,55 160,45 L160,35 L200,35 Z M80,25 L120,25 L120,35 L80,35 Z"/></svg>');
+    background-repeat: no-repeat;
+    background-size: contain;
+    animation: spinDumbbell 1s linear infinite;
+}
+
+@keyframes spinDumbbell {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

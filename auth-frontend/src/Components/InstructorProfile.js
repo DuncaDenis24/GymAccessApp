@@ -182,7 +182,9 @@ const InstructorProfile = ({ onLogout }) => {
         setShowCancelEditing(false);
     };
 
-    if (!instructor) return <div className="loading-container">Loading profile...</div>;
+    if (!instructor) return <div className="loading-overlay">
+        <div className="dumbbell-loader"></div>
+    </div>
 
     return (
         <div className="profile-page">
