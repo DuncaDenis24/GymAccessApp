@@ -19,6 +19,7 @@ const InstructorProfile = ({ onLogout }) => {
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [showCancelEditing, setShowCancelEditing] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [clientCount, setClientCount] = useState(0); // Initialize client count
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,6 +28,9 @@ const InstructorProfile = ({ onLogout }) => {
                 const res = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}`);
                 const data = res.data;
 
+                const clients = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}/clients/count`);
+                const clientsCount = clients.data.clientCount || 0;
+                setClientCount(clientsCount); // Set the client count
                 setInstructor({
                     name: data.name,
                     surname: data.surname,
@@ -292,7 +296,7 @@ const InstructorProfile = ({ onLogout }) => {
                                     <h2>{`${formData.name} ${formData.surname}`}</h2>
                                     <p><strong>Email:</strong> {formData.email}</p>
                                     <p><strong>Phone:</strong> {formData.phone || 'Not provided'}</p>
-                                    <p><strong>Join Date:</strong> {formData.joinDate}</p>
+                                    <p><strong>Clients:</strong> {clientCount}</p>
                                 </div>
                                 <div className="profile-buttons">
                                     <button

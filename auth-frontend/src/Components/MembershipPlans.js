@@ -186,51 +186,74 @@ const MembershipPlans = () => {
                         onClose={() => setNotification(null)}
                     />
                 )}
-                {showModal && (
-                    <div className="modal show">
-                        <div className="modal-content">
-                            {existingMembership ? (
-                                <>
-                                    <h3>You already have an active membership!</h3>
-                                    <p>To view your membership details, please visit your profile page.</p>
-                                    <div className="modal-actions">
-                                        <Link to="/profile">
-                                            <button>Go to Profile</button>
-                                        </Link>
-                                        <button onClick={handleCancelMembership}>Close</button>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <h3>Select an Instructor for {selectedPlan.name}</h3>
-                                    <select onChange={handleInstructorChange}>
-                                        <option value="">Choose an Instructor</option>
-                                        {instructors.map((instructor) => (
-                                            <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
-                                                {instructor.name} {instructor.surname}
-                                            </option>
-                                        ))}
-                                    </select>
+            {showModal && (
+                <div className="membership-modal">
+                    <div className="membership-modal-content">
+                        {existingMembership ? (
+                            <>
+                                <h3>You already have an active membership!</h3>
+                                <p>To view your membership details, please visit your profile page.</p>
+                                <div className="membership-modal-actions">
+                                    <Link to="/profile">
+                                        <button className="profile-btn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                            Go to Profile
+                                        </button>
+                                    </Link>
+                                    <button className="cancel-btn" onClick={handleCancelMembership}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        Close
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3>Select an Instructor for {selectedPlan.name}</h3>
+                                <select onChange={handleInstructorChange}>
+                                    <option value="">Choose an Instructor</option>
+                                    {instructors.map((instructor) => (
+                                        <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
+                                            {instructor.name} {instructor.surname}
+                                        </option>
+                                    ))}
+                                </select>
 
-                                    <h4>Choose Membership Duration</h4>
-                                    <select onChange={handleDurationChange}>
-                                        <option value={1}>1 Month</option>
-                                        <option value={3}>3 Months</option>
-                                        <option value={6}>6 Months</option>
-                                        <option value={12}>12 Months</option>
-                                    </select>
+                                <h4>Choose Membership Duration</h4>
+                                <select onChange={handleDurationChange}>
+                                    <option value={1}>1 Month</option>
+                                    <option value={3}>3 Months</option>
+                                    <option value={6}>6 Months</option>
+                                    <option value={12}>12 Months</option>
+                                </select>
 
-                                    <p><strong>Total Price: ${totalPrice}</strong></p>
+                                <p><strong>Total Price: ${totalPrice}</strong></p>
 
-                                    <div className="modal-actions">
-                                        <button onClick={handleConfirmMembership}>Confirm Membership</button>
-                                        <button onClick={handleCancelMembership}>Cancel</button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                                    <div className="membership-modal-actions">
+                                    <button onClick={handleConfirmMembership}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M20 6L9 17l-5-5" />
+                                        </svg>
+                                        Confirm
+                                    </button>
+                                    <button onClick={handleCancelMembership}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
-                )}
+                </div>
+            )}
             </div>
         
     );

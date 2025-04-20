@@ -406,7 +406,8 @@ const UserProfile = ({ onLogout }) => {
                                             {showMembership ? "Hide Details" : "Show Membership"}
                                         </button>
                                     ) : (
-                                        <Link to="/memberships">
+                                            <Link to="/memberships"
+                                                className="details-btn-link"                                            >
                                             <button className="details-btn">
                                                 Get Membership
                                             </button>
