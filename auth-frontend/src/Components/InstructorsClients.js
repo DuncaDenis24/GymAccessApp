@@ -10,7 +10,7 @@ const InstructorClients = ({ instructorId }) => {
         const instructorId = localStorage.getItem("userId");
         const fetchClients = async () => {
             try {
-                const response = await fetch(`http://localhost:5017/api/instructors/get/${instructorId}/clients`);
+                const response = await fetch(`https://localhost:7253/api/instructors/get/${instructorId}/clients`);
                 const data = await response.json();
                 console.log("API response:", data);
 

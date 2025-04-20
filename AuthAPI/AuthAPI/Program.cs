@@ -7,13 +7,17 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
 // Enable CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // Allow frontend origin
+            policy.WithOrigins("http://localhost:3000", "https://localhost:3000")// Allow frontend origin
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -25,6 +29,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -35,7 +41,7 @@ else
 // Use the CORS policy specifically defined
 app.UseCors("AllowFrontend");
 
-// app.UseHttpsRedirection(); // Optional, if you want to enforce HTTPS
+app.UseHttpsRedirection(); // Optional, if you want to enforce HTTPS
 app.UseAuthorization();
 app.MapControllers();
 

@@ -69,7 +69,7 @@ const Login = ({ onLoginSuccess }) => {
             const payload = { name, surname, email, password, phone };
             if (isInstructor) payload.instructorCode = instructorCode;
 
-            await axios.post(`http://localhost:5017/api/auth/${endpoint}`, payload);
+            await axios.post(`https://localhost:7253/api/auth/${endpoint}`, payload);
             setNotification({ type: "success", message: 'Registration successful! Please log in.' });
             resetForm();
         } catch (error) {
@@ -86,7 +86,7 @@ const Login = ({ onLoginSuccess }) => {
 
             if (isInstructor) payload.instructorCode = instructorCode;
 
-            const response = await axios.post(`http://localhost:5017/api/auth/${endpoint}`, payload);
+            const response = await axios.post(`https://localhost:7253/api/auth/${endpoint}`, payload);
             const data = response.data;
 
             const userData = {

@@ -25,10 +25,10 @@ const InstructorProfile = ({ onLogout }) => {
         const fetchData = async () => {
             try {
                 const instructorId = localStorage.getItem("userId"); // or instructorId if stored separately
-                const res = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}`);
+                const res = await axios.get(`https://localhost:7253/api/instructors/get/${instructorId}`);
                 const data = res.data;
 
-                const clients = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}/clients/count`);
+                const clients = await axios.get(`https://localhost:7253/api/instructors/get/${instructorId}/clients/count`);
                 const clientsCount = clients.data.clientCount || 0;
                 setClientCount(clientsCount); // Set the client count
                 setInstructor({
@@ -80,7 +80,7 @@ const InstructorProfile = ({ onLogout }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5017/api/instructors/delete/${userId}`, {
+            const response = await fetch(`https://localhost:7253/api/instructors/delete/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -144,7 +144,7 @@ const InstructorProfile = ({ onLogout }) => {
                 photo: formData.profilePicture || profilePicture
             };
             await axios.put(
-                `http://localhost:5017/api/instructors/update/${instructorId}`,
+                `https://localhost:7253/api/instructors/update/${instructorId}`,
                 updatedData,
                 { headers: { "Content-Type": "application/json" } }
             );

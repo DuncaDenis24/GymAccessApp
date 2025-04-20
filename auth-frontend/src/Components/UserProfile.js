@@ -40,7 +40,7 @@ const UserProfile = ({ onLogout }) => {
         const fetchUser = async () => {
             try {
                 const userId = localStorage.getItem("userId");
-                const res = await axios.get(`http://localhost:5017/api/user/get/${userId}`);
+                const res = await axios.get(`https://localhost:7253/api/user/get/${userId}`);
                 const data = res.data;
 
                 setUser({
@@ -104,7 +104,7 @@ const UserProfile = ({ onLogout }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5017/api/user/delete/${userId}`, {
+            const response = await fetch(`https://localhost:7253/api/user/delete/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -157,7 +157,7 @@ const UserProfile = ({ onLogout }) => {
             };
 
             await axios.put(
-                `http://localhost:5017/api/user/update/${userId}`,
+                `https://localhost:7253/api/user/update/${userId}`,
                 updatedData
             );
 
@@ -203,7 +203,7 @@ const UserProfile = ({ onLogout }) => {
     const handleCancelMembership = async () => {
         try {
             const userId = localStorage.getItem("userId");
-            await axios.put(`http://localhost:5017/api/memberships/cancel/${userId}`, null, {
+            await axios.put(`https://localhost:7253/api/memberships/cancel/${userId}`, null, {
                 headers: { 'Content-Type': 'application/json' }
             });
 

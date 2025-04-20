@@ -62,7 +62,7 @@ const MembershipPlans = () => {
     useEffect(() => {
         const fetchInstructors = async () => {
             try {
-                const response = await fetch(`http://localhost:5017/api/instructors/get/instructors`);
+                const response = await fetch(`https://localhost:7253/api/instructors/get/instructors`);
                 const data = await response.json();
                 setInstructors(data);
             } catch (error) {
@@ -88,7 +88,7 @@ const MembershipPlans = () => {
         const userId = localStorage.getItem("userId");
 
         try {
-            const response = await axios.get(`http://localhost:5017/api/memberships/user/${userId}`);
+            const response = await axios.get(`https://localhost:7253/api/memberships/user/${userId}`);
             const { hasMembership } = response.data;
 
             if (hasMembership) {
@@ -133,7 +133,7 @@ const MembershipPlans = () => {
         };
 
         try {
-            const response = await axios.post("http://localhost:5017/api/memberships/create", membershipData);
+            const response = await axios.post("https://localhost:7253/api/memberships/create", membershipData);
             setNotification({ type: 'success', message: "Membership created successfully!" });
             setShowModal(false);
 
