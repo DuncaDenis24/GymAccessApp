@@ -20,6 +20,7 @@
         z-index: -1;
         filter: blur(60px);
         opacity: 0.15;
+
     }
 
     .clients-container::before {
@@ -28,7 +29,7 @@
         background: #3498db;
         top: -100px;
         left: -100px;
-        animation: float 12s ease-in-out infinite alternate;
+        animation: client-float 12s ease-in-out infinite alternate;
     }
 
     .clients-container::after {
@@ -37,10 +38,10 @@
         background: #e74c3c;
         bottom: -80px;
         right: -80px;
-        animation: float 8s ease-in-out infinite alternate-reverse;
+        animation: client-float 8s ease-in-out infinite alternate-reverse;
     }
 
-@keyframes float {
+@keyframes client-float {
     0% {
         transform: translate(0, 0) rotate(0deg);
     }
@@ -245,7 +246,7 @@
     display: block;
     opacity: 0.8;
     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
-    animation: float 6s ease-in-out infinite;
+    animation: client-float 6s ease-in-out infinite;
 }
 
 /* Responsive Design */
