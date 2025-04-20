@@ -10,11 +10,11 @@ const InstructorProfile = () => {
     const instructorId = 1; // Example instructor ID (could come from login/session)
 
     useEffect(() => {
-        // Fetch instructor profile
-        axios
-            .get(`http://localhost:5000/api/instructors/${instructorId}`)
-            .then((res) => setInstructor(res.data))
-            .catch((err) => console.error("Error fetching instructor:", err));
+        const fetchData = async () => {
+            try {
+                const instructorId = localStorage.getItem("userId"); // or instructorId if stored separately
+                const res = await axios.get(`http://localhost:5017/api/instructors/get/${instructorId}`);
+                const data = res.data;
 
         // Fetch instructor's clients
         axios

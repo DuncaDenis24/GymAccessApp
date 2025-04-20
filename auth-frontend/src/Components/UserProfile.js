@@ -24,7 +24,7 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
         const fetchUser = async () => {
             try {
                 const userId = localStorage.getItem("userId");
-                const res = await axios.get(`http://localhost:5017/api/user/get/${userId}`);
+                const res = await axios.get(`https://localhost:7253/api/user/get/${userId}`);
                 const data = res.data;
 
 
@@ -83,31 +83,20 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
                 formData.phone !== user.phone ||
                 formData.profilePicture !== (user.photo || profilePicture);
 
-            if (!hasChanges) {
-                setSuccessMessage("No changes were made");
-                return; // Stay in edit mode
-            }
+            await axios.put(
+                `http://localhost:5017/api/user/update/${userId}`,
+                updatedData
+            );
 
-            try {
-                const userId = localStorage.getItem("userId");
-                const response = await axios.put(
-                    `http://localhost:5017/api/user/update/${userId}`,
-                    updatedData
-                );
-                const newUserData = {
-                    ...user,
-                    name: updatedData.Name,
-                    surname: updatedData.Surname,
-                    email: updatedData.Email,
-                    phone: updatedData.Phone,
-                    photo: updatedData.Photo
-                };
-                setUser(newUserData); // Update user state
-                setFormData({
-                    ...formData,
-                    ...updatedData,
-                    profilePicture: updatedData.Photo
-                });
+            // Update user state
+            setUser({
+                ...user,
+                name: updatedData.Name,
+                surname: updatedData.Surname,
+                email: updatedData.Email,
+                phone: updatedData.Phone,
+                photo: updatedData.Photo
+            });
 
                 setSuccessMessage("Changes saved successfully!");
                 setIsEditing(false);
@@ -123,6 +112,39 @@ const UserProfile = ({ onLogout, onUpdateProfile }) => {
 
 
     if (!user) return <p>Loading profile...</p>;
+
+        if (currentDate > end) return 0;
+
+        const yearsDifference = end.getFullYear() - currentDate.getFullYear();
+        const monthsDifference = end.getMonth() - currentDate.getMonth();
+        const totalMonthsLeft = yearsDifference * 12 + monthsDifference;
+
+        return totalMonthsLeft >= 0 ? totalMonthsLeft : 0;
+    };
+
+    // Handle membership cancellation
+    const handleCancelMembership = async () => {
+        try {
+            const userId = localStorage.getItem("userId");
+            await axios.put(`http://localhost:5017/api/memberships/cancel/${userId}`, null, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            setMembershipDetails(null);
+            setUser(prev => ({ ...prev, membership: null }));
+            setNotification({ type: 'success', message: "Membership cancelled successfully" });
+            setShowMembership(false);
+        } catch (error) {
+            console.error("Failed to cancel membership", error);
+            setNotification({ type: 'error', message: "Failed to cancel membership" });
+        }
+    };
+
+    const monthsLeft = membershipDetails && membershipDetails.endDate
+        ? calculateMonthsLeft(membershipDetails.startDate, membershipDetails.endDate)
+        : 0;
+
+    if (!user) return <div className="loading-container">Loading profile...</div>;
 
     return (
         <div className="profile-container">
