@@ -14,7 +14,7 @@ import Facilities from './Components/Facilities';
 const App = () => {
     const [user, setUser] = useState(null);
 
-    // 👇 Load from localStorage on app start
+    
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -24,7 +24,7 @@ const App = () => {
 
     const handleLoginSuccess = (userData) => {
         setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData)); // 👈 Save user
+        localStorage.setItem("user", JSON.stringify(userData)); 
     };
 
     const handleLogout = () => {
@@ -36,7 +36,7 @@ const App = () => {
     const handleUpdateProfile = (updatedData) => {
         const updatedUser = { ...user, ...updatedData };
         setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser)); // 👈 Keep updated
+        localStorage.setItem("user", JSON.stringify(updatedUser)); 
     };
 
     return (

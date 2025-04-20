@@ -170,14 +170,6 @@ const InstructorProfile = ({ onLogout }) => {
         setShowLogoutConfirm(false);
     };
 
-    const handleCancelEdit = () => {
-        if (hasChanges()) {
-            setShowCancelEditing(true);
-        } else {
-            setIsEditing(false);
-        }
-    };
-
     const handleConfirmCancelEdit = () => {
         setFormData({
             name: instructor.name,

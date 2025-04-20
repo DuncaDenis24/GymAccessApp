@@ -51,7 +51,7 @@ const Sidebar = () => {
             >
                 {isOpen ? <X size={28} /> : <Menu size={28} />}
             </div>
-
+            <div>
             <div className={`sidebar ${isOpen ? 'open' : ''}`} ref={sidebarRef}>
                 <nav>
                     <ul>
@@ -91,6 +91,18 @@ const Sidebar = () => {
                         </li>
                     </ul>
                 </nav>
+                <div class="rotating-icon">
+                    <svg viewBox="0 0 50 50">
+                        <path d="M25 5 L45 15 L45 35 L25 45 L5 35 L5 15 Z M25 10 L10 18 L10 32 L25 40 L40 32 L40 18 Z" fill="#fff" />
+                        <path d="M15 18 L35 32 M35 18 L15 32" stroke="#f44336" stroke-width="2" />
+                    </svg>
+                    </div>
+                    <div className="sidebar-footer">
+                        <p>&copy; 2025 Gym Access App</p>
+                        <p>All rights reserved.</p>
+                        <p>Developed by Mircea, Denis, Flaviu and Vero</p>
+                    </div>
+                </div>
             </div>
         </>
     );
