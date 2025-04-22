@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import "../styles/InstructorsClients.css";
-import NoClients from './NoClients';    
+import NoClients from './NoClients';
 
 const InstructorClients = ({ instructorId }) => {
     const [clients, setClients] = useState([]);
@@ -14,7 +14,7 @@ const InstructorClients = ({ instructorId }) => {
                 const data = await response.json();
                 console.log("API response:", data);
 
-                    setClients(data);
+                setClients(data);
             } catch (error) {
                 console.error("Error fetching clients:", error);
                 setClients([]);
@@ -33,7 +33,7 @@ const InstructorClients = ({ instructorId }) => {
             <h2 className="clients-title">Your Clients</h2>
 
             {clients.length === 0 ? (
-                <NoClients/>
+                <NoClients />
             ) : (
                 <div className="clients-grid">
                     {clients.map((client) => (
@@ -48,6 +48,8 @@ const InstructorClients = ({ instructorId }) => {
                                 <p>Email: {client.email}</p>
                                 <p>Phone: {client.phone}</p>
                                 <p>Membership: {client.membership?.type || "None"}</p>
+                                <p>Start date: {client.membership?.startDate ? new Date(client.membership.startDate).toLocaleDateString() : "None"}</p>
+                                <p>End date: {client.membership?.endDate ? new Date(client.membership.endDate).toLocaleDateString() : "None"}</p>
                             </div>
                         </div>
                     ))}
