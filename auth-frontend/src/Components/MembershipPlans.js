@@ -44,7 +44,35 @@ const plans = [
         freeStuff: "Custom Nutrition Plan + All Gear",
         access: "VIP Lounge + 24/7 Access + Spa",
         bgColor: "#f8bbd0"
+    },
+    {
+        name: "Solo Splash",
+        price: 30,
+        hoursWithInstructor: "No instructor",
+        freeStuff: "Swim Cap + Water Bottle",
+        access: "Access to Pool + Gym (6 AM - 10 PM)",
+        bgColor: "#b3e5fc",
+        noInstructor: true
+    },
+    {
+        name: "Solo Zen",
+        price: 50,
+        hoursWithInstructor: "No instructor",
+        freeStuff: "Yoga Mat + Relaxation Kit",
+        access: "Full Gym + Yoga Studio (Weekdays + Sat)",
+        bgColor: "#ffe0f0",
+        noInstructor: true
+    },
+    {
+        name: "Solo Bliss",
+        price: 70,
+        hoursWithInstructor: "No instructor",
+        freeStuff: "Spa Pass + Premium Locker",
+        access: "Gym + Sauna + Yoga Studio + Pool (Full-Time Access)",
+        bgColor: "#dcedc8",
+        noInstructor: true
     }
+
 ];
 
 const MembershipPlans = () => {
@@ -104,6 +132,10 @@ const MembershipPlans = () => {
         setSelectedPlan(plan);
         setExistingMembership(null);
         setShowModal(true);
+
+        if (plan.noInstructor) {
+            setSelectedInstructor(null);
+        }
     };
 
     const handleInstructorChange = (e) => {
@@ -162,30 +194,35 @@ const MembershipPlans = () => {
         setShowModal(false);
     };
 
-   
+
 
     return (
-            <div className="plans-container">
-                <h1 className="plans-title">Choose Your Membership</h1>
-                <div className="plans-grid">
-                    {plans.map((plan, index) => (
-                        <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
-                            <h2>{plan.name}</h2>
-                            <p><strong>Price:</strong> ${plan.price}/mo</p>
-                            <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
-                            <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
-                            <p><strong>Access:</strong> {plan.access}</p>
-                            <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
-                        </div>
-                    ))}
-                </div>
-                {notification && (
-                    <Notification
-                        message={notification.message}
-                        type={notification.type}
-                        onClose={() => setNotification(null)}
-                    />
-                )}
+        <div className="plans-container">
+            <h1 className="plans-title">Choose Your Membership</h1>
+            <div className="plans-grid">
+                {plans.map((plan, index) => (
+                    <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
+                        {plan.noInstructor && (
+                            <span className="no-instructor-badge">No Instructor Needed</span>
+                        )}
+                        <h2>{plan.name}</h2>
+                        <p><strong>Price:</strong> ${plan.price}/mo</p>
+                        <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
+                        <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
+                        <p><strong>Access:</strong> {plan.access}</p>
+                        <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
+                    </div>
+                ))}
+            </div>
+
+            {notification && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={() => setNotification(null)}
+                />
+            )}
+
             {showModal && (
                 <div className="membership-modal">
                     <div className="membership-modal-content">
@@ -214,15 +251,21 @@ const MembershipPlans = () => {
                             </>
                         ) : (
                             <>
-                                <h3>Select an Instructor for {selectedPlan.name}</h3>
-                                <select onChange={handleInstructorChange}>
-                                    <option value="">Choose an Instructor</option>
-                                    {instructors.map((instructor) => (
-                                        <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
-                                            {instructor.name} {instructor.surname}
-                                        </option>
-                                    ))}
-                                </select>
+                                <h3>Confirm Your Membership: <strong>{selectedPlan.name}</strong></h3>
+
+                                {!selectedPlan?.noInstructor && (
+                                    <>
+                                        <h4>Select an Instructor</h4>
+                                        <select onChange={handleInstructorChange}>
+                                            <option value="">Choose an Instructor</option>
+                                            {instructors.map((instructor) => (
+                                                <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
+                                                    {instructor.name} {instructor.surname}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </>
+                                )}
 
                                 <h4>Choose Membership Duration</h4>
                                 <select onChange={handleDurationChange}>
@@ -234,7 +277,7 @@ const MembershipPlans = () => {
 
                                 <p><strong>Total Price: ${totalPrice}</strong></p>
 
-                                    <div className="membership-modal-actions">
+                                <div className="membership-modal-actions">
                                     <button onClick={handleConfirmMembership}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M20 6L9 17l-5-5" />
@@ -254,11 +297,9 @@ const MembershipPlans = () => {
                     </div>
                 </div>
             )}
-            </div>
-        
+        </div>
     );
 
-
-};
+}
 
 export default MembershipPlans;
