@@ -18,7 +18,7 @@ public class DataContext : DbContext
             .HasOne(u => u.Membership)
             .WithMany(m => m.Users)
             .HasForeignKey(u => u.Membership_Id)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Cascade);
 
         // User-Instructor relationship
         modelBuilder.Entity<User>()
