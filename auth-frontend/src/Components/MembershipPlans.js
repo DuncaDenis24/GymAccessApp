@@ -11,7 +11,8 @@ const plans = [
         hoursWithInstructor: "2 hours/week",
         freeStuff: "Free water bottle",
         access: "Access from 9 AM to 5 PM (Weekdays)",
-        bgColor: "#e0f7fa"
+        bgColor: "#e0f7fa",
+        noInstructor: false
     },
     {
         name: "Basic",
@@ -19,7 +20,8 @@ const plans = [
         hoursWithInstructor: "4 hours/week",
         freeStuff: "Water bottle + Gym Towel",
         access: "Access from 6 AM to 10 PM (Weekdays + Sat)",
-        bgColor: "#c8e6c9"
+        bgColor: "#c8e6c9",
+        noInstructor: false
     },
     {
         name: "Premium",
@@ -27,7 +29,8 @@ const plans = [
         hoursWithInstructor: "6 hours/week",
         freeStuff: "T-shirt + Supplements Samples",
         access: "Full-time Access + Sauna",
-        bgColor: "#fff9c4"
+        bgColor: "#fff9c4",
+        noInstructor: false
     },
     {
         name: "Pro",
@@ -35,7 +38,8 @@ const plans = [
         hoursWithInstructor: "Unlimited sessions",
         freeStuff: "Complete Gym Kit",
         access: "24/7 Access + Sauna + Pool",
-        bgColor: "#ffe0b2"
+        bgColor: "#ffe0b2",
+        noInstructor: false
     },
     {
         name: "Elite",
@@ -43,7 +47,8 @@ const plans = [
         hoursWithInstructor: "Personal Trainer Included",
         freeStuff: "Custom Nutrition Plan + All Gear",
         access: "VIP Lounge + 24/7 Access + Spa",
-        bgColor: "#f8bbd0"
+        bgColor: "#f8bbd0",
+        noInstructor: false
     },
     {
         name: "Solo Splash",
@@ -147,37 +152,45 @@ const MembershipPlans = () => {
     };
 
     const handleConfirmMembership = async () => {
-        if (!selectedInstructor) {
-            // Show notification if no instructor is selected
+        const userId = parseInt(localStorage.getItem("userId"), 10); // Ensure userId is an integer
+
+        // For instructor-based memberships, make sure one is selected
+        if (!selectedPlan?.noInstructor && !selectedInstructor) {
             setNotification({ type: 'error', message: "Please select an instructor!" });
-            return; // Stop further execution
+            return;
         }
 
-        const userId = localStorage.getItem("userId");
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + selectedDuration);
 
+        // Build the payload conditionally
         const membershipData = {
-            startDate: new Date().toISOString(),
-            endDate: new Date(new Date().setMonth(new Date().getMonth() + selectedDuration)).toISOString(),
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
             price: totalPrice,
             membershipType: selectedPlan.name,
             userId: userId,
-            instructorId: selectedInstructor
+            instructorId: selectedPlan.noInstructor ? null : parseInt(selectedInstructor, 10)
         };
 
         try {
-            const response = await axios.post("https://localhost:7253/api/memberships/create", membershipData);
+            await axios.post("https://localhost:7253/api/memberships/create", membershipData);
             setNotification({ type: 'success', message: "Membership created successfully!" });
             setShowModal(false);
 
-            // Așteptăm notificarea să fie afișată complet (ex. 3.5 secunde), apoi navigăm
             setTimeout(() => {
                 navigate('/profile');
             }, 3500);
         } catch (error) {
             console.error("Error creating membership:", error);
+            console.log("Membership Data Sent:", membershipData);
+            if (error.response) console.log("Backend Response:", error.response.data);
             setNotification({ type: 'error', message: "Failed to create membership." });
         }
-    }
+    };
+
+
 
 
 

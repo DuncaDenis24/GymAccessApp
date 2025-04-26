@@ -1,20 +1,21 @@
 ﻿namespace AuthAPI.Models.DTOs { 
-public class LoginDto
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string? InstructorCode { get; set; }
-}
+    public class LoginDto
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string? InstructorCode { get; set; }
+    }
 
-public class RegisterDto
-        {
-            public string Name { get; set; }
-            public string Surname { get; set; }
-            public string Email { get; set; }
-            public string Phone { get; set; }
-            public string Password { get; set; }
-            public string? InstructorCode { get; set; } 
-        }
+    public class RegisterDto
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Password { get; set; }
+        public string? InstructorCode { get; set; } 
+    }
+    
     public class UserDto
     {
         public string Name { get; set; }
@@ -22,7 +23,7 @@ public class RegisterDto
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Photo { get; set; }
-   }
+    }
 
     public class InstructorDto
     {
@@ -32,6 +33,7 @@ public class RegisterDto
         public string Phone { get; set; }
         public string Photo { get; set; } // URL or path to profile picture
     }
+
     public class UserWithDetailsDto
     {
         public int UserId { get; set; }
@@ -56,8 +58,9 @@ public class RegisterDto
         public string MembershipType { get; set; }
 
         public int UserId { get; set; }
-        public int InstructorId { get; set; }
+        public int? InstructorId { get; set; }
     }
+
     public class MembershipRequest
     {
         public string MembershipType { get; set; }
