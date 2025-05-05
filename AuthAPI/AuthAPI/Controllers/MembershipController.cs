@@ -51,6 +51,8 @@ namespace AuthAPI.Controllers
             if (user == null) return NotFound("User not found");
 
             user.Membership_Id = membership.Membership_Id;
+
+            // If the membership doesn't require an instructor, we leave InstructorId as null
             user.Instructor_Id = dto.InstructorId;
 
             await _context.SaveChangesAsync();

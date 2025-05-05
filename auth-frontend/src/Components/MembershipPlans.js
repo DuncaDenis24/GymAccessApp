@@ -11,7 +11,8 @@ const plans = [
         hoursWithInstructor: "2 hours/week",
         freeStuff: "Free water bottle",
         access: "Access from 9 AM to 5 PM (Weekdays)",
-        bgColor: "#e0f7fa"
+        bgColor: "#e0f7fa",
+        noInstructor: false
     },
     {
         name: "Basic",
@@ -19,7 +20,8 @@ const plans = [
         hoursWithInstructor: "4 hours/week",
         freeStuff: "Water bottle + Gym Towel",
         access: "Access from 6 AM to 10 PM (Weekdays + Sat)",
-        bgColor: "#c8e6c9"
+        bgColor: "#c8e6c9",
+        noInstructor: false
     },
     {
         name: "Premium",
@@ -27,7 +29,8 @@ const plans = [
         hoursWithInstructor: "6 hours/week",
         freeStuff: "T-shirt + Supplements Samples",
         access: "Full-time Access + Sauna",
-        bgColor: "#fff9c4"
+        bgColor: "#fff9c4",
+        noInstructor: false
     },
     {
         name: "Pro",
@@ -35,7 +38,8 @@ const plans = [
         hoursWithInstructor: "Unlimited sessions",
         freeStuff: "Complete Gym Kit",
         access: "24/7 Access + Sauna + Pool",
-        bgColor: "#ffe0b2"
+        bgColor: "#ffe0b2",
+        noInstructor: false
     },
     {
         name: "Elite",
@@ -43,8 +47,37 @@ const plans = [
         hoursWithInstructor: "Personal Trainer Included",
         freeStuff: "Custom Nutrition Plan + All Gear",
         access: "VIP Lounge + 24/7 Access + Spa",
-        bgColor: "#f8bbd0"
+        bgColor: "#f8bbd0",
+        noInstructor: false
+    },
+    {
+        name: "Solo Splash",
+        price: 30,
+        hoursWithInstructor: "No instructor",
+        freeStuff: "Swim Cap + Water Bottle",
+        access: "Access to Pool + Gym (6 AM - 10 PM)",
+        bgColor: "#b3e5fc",
+        noInstructor: true
+    },
+    {
+        name: "Solo Zen",
+        price: 50,
+        hoursWithInstructor: "No instructor",
+        freeStuff: "Yoga Mat + Relaxation Kit",
+        access: "Full Gym + Yoga Studio (Weekdays + Sat)",
+        bgColor: "#ffe0f0",
+        noInstructor: true
+    },
+    {
+        name: "Solo Bliss",
+        price: 70,
+        hoursWithInstructor: "No instructor",
+        freeStuff: "Spa Pass + Premium Locker",
+        access: "Gym + Sauna + Yoga Studio + Pool (Full-Time Access)",
+        bgColor: "#dcedc8",
+        noInstructor: true
     }
+
 ];
 
 const MembershipPlans = () => {
@@ -104,6 +137,10 @@ const MembershipPlans = () => {
         setSelectedPlan(plan);
         setExistingMembership(null);
         setShowModal(true);
+
+        if (plan.noInstructor) {
+            setSelectedInstructor(null);
+        }
     };
 
     const handleInstructorChange = (e) => {
@@ -115,37 +152,45 @@ const MembershipPlans = () => {
     };
 
     const handleConfirmMembership = async () => {
-        if (!selectedInstructor) {
-            // Show notification if no instructor is selected
+        const userId = parseInt(localStorage.getItem("userId"), 10); // Ensure userId is an integer
+
+        // For instructor-based memberships, make sure one is selected
+        if (!selectedPlan?.noInstructor && !selectedInstructor) {
             setNotification({ type: 'error', message: "Please select an instructor!" });
-            return; // Stop further execution
+            return;
         }
 
-        const userId = localStorage.getItem("userId");
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + selectedDuration);
 
+        // Build the payload conditionally
         const membershipData = {
-            startDate: new Date().toISOString(),
-            endDate: new Date(new Date().setMonth(new Date().getMonth() + selectedDuration)).toISOString(),
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
             price: totalPrice,
             membershipType: selectedPlan.name,
             userId: userId,
-            instructorId: selectedInstructor
+            instructorId: selectedPlan.noInstructor ? null : parseInt(selectedInstructor, 10)
         };
 
         try {
-            const response = await axios.post("https://localhost:7253/api/memberships/create", membershipData);
+            await axios.post("https://localhost:7253/api/memberships/create", membershipData);
             setNotification({ type: 'success', message: "Membership created successfully!" });
             setShowModal(false);
 
-            // Așteptăm notificarea să fie afișată complet (ex. 3.5 secunde), apoi navigăm
             setTimeout(() => {
                 navigate('/profile');
             }, 3500);
         } catch (error) {
             console.error("Error creating membership:", error);
+            console.log("Membership Data Sent:", membershipData);
+            if (error.response) console.log("Backend Response:", error.response.data);
             setNotification({ type: 'error', message: "Failed to create membership." });
         }
-    }
+    };
+
+
 
 
 
@@ -162,30 +207,35 @@ const MembershipPlans = () => {
         setShowModal(false);
     };
 
-   
+
 
     return (
-            <div className="plans-container">
-                <h1 className="plans-title">Choose Your Membership</h1>
-                <div className="plans-grid">
-                    {plans.map((plan, index) => (
-                        <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
-                            <h2>{plan.name}</h2>
-                            <p><strong>Price:</strong> ${plan.price}/mo</p>
-                            <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
-                            <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
-                            <p><strong>Access:</strong> {plan.access}</p>
-                            <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
-                        </div>
-                    ))}
-                </div>
-                {notification && (
-                    <Notification
-                        message={notification.message}
-                        type={notification.type}
-                        onClose={() => setNotification(null)}
-                    />
-                )}
+        <div className="plans-container">
+            <h1 className="plans-title">Choose Your Membership</h1>
+            <div className="plans-grid">
+                {plans.map((plan, index) => (
+                    <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
+                        {plan.noInstructor && (
+                            <span className="no-instructor-badge">No Instructor Needed</span>
+                        )}
+                        <h2>{plan.name}</h2>
+                        <p><strong>Price:</strong> ${plan.price}/mo</p>
+                        <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
+                        <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
+                        <p><strong>Access:</strong> {plan.access}</p>
+                        <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
+                    </div>
+                ))}
+            </div>
+
+            {notification && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={() => setNotification(null)}
+                />
+            )}
+
             {showModal && (
                 <div className="membership-modal">
                     <div className="membership-modal-content">
@@ -214,15 +264,21 @@ const MembershipPlans = () => {
                             </>
                         ) : (
                             <>
-                                <h3>Select an Instructor for {selectedPlan.name}</h3>
-                                <select onChange={handleInstructorChange}>
-                                    <option value="">Choose an Instructor</option>
-                                    {instructors.map((instructor) => (
-                                        <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
-                                            {instructor.name} {instructor.surname}
-                                        </option>
-                                    ))}
-                                </select>
+                                <h3>Confirm Your Membership: <strong>{selectedPlan.name}</strong></h3>
+
+                                {!selectedPlan?.noInstructor && (
+                                    <>
+                                        <h4>Select an Instructor</h4>
+                                        <select onChange={handleInstructorChange}>
+                                            <option value="">Choose an Instructor</option>
+                                            {instructors.map((instructor) => (
+                                                <option key={instructor.instructor_Id} value={instructor.instructor_Id}>
+                                                    {instructor.name} {instructor.surname}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </>
+                                )}
 
                                 <h4>Choose Membership Duration</h4>
                                 <select onChange={handleDurationChange}>
@@ -234,7 +290,7 @@ const MembershipPlans = () => {
 
                                 <p><strong>Total Price: ${totalPrice}</strong></p>
 
-                                    <div className="membership-modal-actions">
+                                <div className="membership-modal-actions">
                                     <button onClick={handleConfirmMembership}>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M20 6L9 17l-5-5" />
@@ -254,11 +310,9 @@ const MembershipPlans = () => {
                     </div>
                 </div>
             )}
-            </div>
-        
+        </div>
     );
 
-
-};
+}
 
 export default MembershipPlans;

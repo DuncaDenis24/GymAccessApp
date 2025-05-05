@@ -102,18 +102,34 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "An error occurred", error = ex.Message });
         }
     }
+    
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        // Găsește utilizatorul și include abonamentul asociat
+        var user = await _context.Users
+            .Include(u => u.Membership) // Include relația Membership
+            .FirstOrDefaultAsync(u => u.User_Id == id);
 
         if (user == null)
             return NotFound(new { message = "User not found." });
 
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
+        try
+        {
+            // Dacă utilizatorul are un abonament, îl ștergem
+            if (user.Membership != null && user.Membership.Users?.Count == 1)
+                _context.Memberships.Remove(user.Membership);
 
-        return Ok(new { message = "User deleted successfully." });
+            // Ștergem utilizatorul
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "User and membership deleted successfully."});
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while deleting the user.", error = ex.Message });
+        }
     }
 }
 

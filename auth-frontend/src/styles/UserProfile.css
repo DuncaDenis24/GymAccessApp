@@ -27,6 +27,7 @@
         right: 0;
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%232c3e50" cx="50" cy="50" r="40"/><circle fill="none" stroke="white" strokeWidth="3" cx="50" cy="50" r="30"/><circle fill="none" stroke="white" strokeWidth="2" cx="50" cy="50" r="25"/><text fill="white" font-family="Arial" font-weight="bold" font-size="12" text-anchor="middle" x="50" y="53">20kg</text><rect fill="%232c3e50" x="45" y="30" width="10" height="15" rx="2"/></svg>');
     }
+
 .dumbbell-float {
     position: fixed;
     width: 180px;
@@ -35,10 +36,10 @@
     background-repeat: no-repeat;
     background-size: contain;
     z-index: -1;
-    opacity: 0.5; 
+    opacity: 0.5;
     animation: dumbell-float 8s ease-in-out infinite;
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
-    transform: translateY(0) rotate(-4deg); 
+    transform: translateY(0) rotate(-4deg);
 }
 
 @keyframes dumbell-float {
@@ -49,6 +50,7 @@
     50% {
         transform: translateY(-50px) rotate(4deg);
     }
+
     100% {
         transform: translateY(0) rotate(-4deg);
     }
@@ -57,7 +59,7 @@
 .dumbbell-float:nth-child(1) {
     top: 15%;
     left: 5%;
-    width: 180px; 
+    width: 180px;
     animation-delay: 0s;
 }
 
@@ -68,19 +70,20 @@
     animation-delay: 2s;
 }
 
-.dumbbell-float:nth-child(3) { 
+.dumbbell-float:nth-child(3) {
     bottom: 15%;
     left: 5%;
     width: 200px;
     animation-delay: 1s;
 }
 
-.dumbbell-float:nth-child(4) { 
+.dumbbell-float:nth-child(4) {
     bottom: 15%;
     right: 5%;
     width: 220px;
     animation-delay: 3s;
 }
+
 .profile-container {
     max-width: 900px;
     margin: 2rem auto;
@@ -220,6 +223,7 @@
     transform: scale(1.05);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 0 5px #d32f2f, 0 0 0 10px rgba(211, 47, 47, 0.2);
 }
+
 .profile-details {
     text-align: center;
     padding: 1.5rem;
@@ -277,11 +281,12 @@
 
 
         .profile-page .form-group input:focus,
-       .profile-page .form-group select:focus {
+        .profile-page .form-group select:focus {
             border-color: #d32f2f;
             box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
             outline: none;
         }
+
 .profile-page .profile-buttons {
     display: flex;
     gap: 10px;
@@ -331,6 +336,7 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
+
 .details-btn-link {
     text-decoration: none;
     display: inline-block;
@@ -381,7 +387,7 @@
     }
 
         .membership-card h3::before {
-            content: "🏋️‍♂️";
+            content: "🏋‍♂";
             margin-right: 8px;
         }
 
@@ -447,26 +453,27 @@
         transform: translateY(0);
     }
 }
-    .logout-modal::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-        background: linear-gradient(to right, #d32f2f, #2c3e50);
-    }
 
-    .logout-modal h3 {
-        margin-bottom: 20px;
-        color: #2c3e50;
-        font-weight: 700;
-    }
+.logout-modal::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #d32f2f, #2c3e50);
+}
 
-    .logout-modal p {
-        color: #7f8c8d;
-        margin-bottom: 25px;
-    }
+.logout-modal h3 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.logout-modal p {
+    color: #7f8c8d;
+    margin-bottom: 25px;
+}
 
 .logout-modal-buttons {
     display: flex;
