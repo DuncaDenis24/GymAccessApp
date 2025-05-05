@@ -1,5 +1,4 @@
-﻿//eslint-disable-next-line
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from "framer-motion";
 import axios from 'axios';
@@ -187,8 +186,6 @@ const UserProfile = ({ onLogout }) => {
     // Calculate remaining membership months
     const calculateMonthsLeft = (startDate, endDate) => {
         if (!startDate || !endDate) return 0;
-
-        const start = new Date(startDate);
         const end = new Date(endDate);
         const currentDate = new Date();
 

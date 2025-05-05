@@ -125,7 +125,7 @@
 
 /* Enhanced Client Cards */
 .clients-grid {
-    display: grid;
+    display:block;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2.5rem;
     padding: 1rem;
@@ -166,6 +166,7 @@
 /* Stagger animations for each card */
 .client-card:nth-child(1) {
     animation-delay: 0.1s;
+
 }
 
 .client-card:nth-child(2) {
