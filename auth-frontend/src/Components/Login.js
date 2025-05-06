@@ -88,7 +88,7 @@ const Login = ({ onLoginSuccess }) => {
 
             const response = await axios.post(`https://localhost:7253/api/auth/${endpoint}`, payload);
             const data = response.data;
-
+            console.log(data.role);
             const userData = {
                 name: data.name,
                 email: data.email,
@@ -96,7 +96,7 @@ const Login = ({ onLoginSuccess }) => {
                 photo: data.photo || null
             };
            
-
+            console.log(userData.role);
             setNotification({type: "success", message: "Login successful!"});
 
             setTimeout(() => {
@@ -106,8 +106,12 @@ const Login = ({ onLoginSuccess }) => {
                 onLoginSuccess(userData);
                 if (userData.role === 'instructor') {
                     navigate('/instructor-profile');
-                } else {
-                    navigate('/profile');
+                } else if (userData.role === 'admin') {
+                    navigate('/admin-profile');
+                }
+                else {
+                    alert("Login successful!")
+                    //navigate('/profile')
                 }
 
                 resetForm();

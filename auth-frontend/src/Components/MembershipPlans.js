@@ -153,7 +153,7 @@ const MembershipPlans = () => {
         setExistingMembership(null);
         setShowModal(true);
 
-        if (membershipPlans.hasInstructor) {
+        if (plan.hasInstructor) {
             setSelectedInstructor(null);
         }
     };
@@ -170,7 +170,7 @@ const MembershipPlans = () => {
         const userId = parseInt(localStorage.getItem("userId"), 10); // Ensure userId is an integer
 
         // For instructor-based memberships, make sure one is selected
-        if (!selectedPlan?.hasInstructor && !selectedInstructor) {
+        if (selectedPlan?.hasInstructor && !selectedInstructor) {
             setNotification({ type: 'error', message: "Please select an instructor!" });
             return;
         }
@@ -186,7 +186,7 @@ const MembershipPlans = () => {
             price: totalPrice,
             membershipType: selectedPlan.name,
             userId: userId,
-            instructorId: selectedPlan.hasInstructor ? null : parseInt(selectedInstructor, 10)
+            instructorId: !selectedPlan.hasInstructor ? null : parseInt(selectedInstructor, 10)
         };
 
         try {

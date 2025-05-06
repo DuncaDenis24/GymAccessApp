@@ -11,8 +11,8 @@ using AuthAPI.Models.DTOs;
 public class AuthController : ControllerBase
 {
     private readonly DataContext _context;
-    private const string InstructorSecretCode = "1234"; // Înlocuiește cu ceva mai sigur în producție
-
+    private const string InstructorSecretCode = "1234"; 
+    private const string AdminSecretCode= "admin";
     public AuthController(DataContext context)
     {
         _context = context;
@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
         if (await _context.Instructors.AnyAsync(i => i.Email == dto.Email))
             return BadRequest(new { message = "Email deja folosit de un instructor." });
 
-        if (dto.InstructorCode != InstructorSecretCode)
+        if (dto.InstructorCode != InstructorSecretCode && dto.InstructorCode != AdminSecretCode)
             return Unauthorized(new { message = "Cod instructor incorect." });
 
         using (var hmac = new HMACSHA512())
@@ -54,7 +54,7 @@ public class AuthController : ControllerBase
         if (instructor == null)
             return Unauthorized(new { message = "Instructorul nu a fost găsit." });
 
-        if (loginDto.InstructorCode != InstructorSecretCode)
+        if (loginDto.InstructorCode != InstructorSecretCode && loginDto.InstructorCode != AdminSecretCode)
             return Unauthorized(new { message = "Cod instructor incorect." });
 
         var parts = instructor.Password.Split(':');
@@ -69,7 +69,7 @@ public class AuthController : ControllerBase
         {
             message = "Autentificare instructor reușită!",
             token = "instructor_jwt_token",
-            role = "instructor",
+            role = loginDto.InstructorCode==InstructorSecretCode ? "instructor": "admin",
             name = instructor.Name,
             email = instructor.Email,
             photo = instructor.Photo,

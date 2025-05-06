@@ -13,7 +13,7 @@ import Facilities from './Components/Facilities';
 
 const App = () => {
     const [user, setUser] = useState(null);
-
+    //localStorage.removeItem("user");
     
     useEffect(() => {
         const storedUser = localStorage.getItem("user");

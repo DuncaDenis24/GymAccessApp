@@ -26,8 +26,6 @@ namespace AuthAPI.Controllers
             {
                 return NotFound("User not found.");
             }
-
-            // Check if user has a membership
             bool hasMembership = user.Membership_Id != null;
 
             return Ok(new { hasMembership });
@@ -46,13 +44,11 @@ namespace AuthAPI.Controllers
             _context.Memberships.Add(membership);
             await _context.SaveChangesAsync();
 
-            // actualizează user-ul cu Membership_Id și Instructor_Id
             var user = await _context.Users.FindAsync(dto.UserId);
             if (user == null) return NotFound("User not found");
 
             user.Membership_Id = membership.Membership_Id;
 
-            // If the membership doesn't require an instructor, we leave InstructorId as null
             user.Instructor_Id = dto.InstructorId;
 
             await _context.SaveChangesAsync();
