@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "../styles/MembershipPlans.css";
 import Notification from './Notification';
-
+/*
 const plans = [
     {
         name: "Starter",
@@ -79,7 +79,7 @@ const plans = [
     }
 
 ];
-
+*/
 const MembershipPlans = () => {
     const [instructors, setInstructors] = useState([]);
     const [selectedInstructor, setSelectedInstructor] = useState(null);
@@ -89,9 +89,22 @@ const MembershipPlans = () => {
     const [selectedDuration, setSelectedDuration] = useState(1);
     const [totalPrice, setTotalPrice] = useState(null);
     const [notification, setNotification] = useState(null);
+    const [membershipPlans, setMembershipPlans] = useState([]);
     const navigate = useNavigate();
 
     // Fetch instructors on component mount
+    useEffect(() => {
+        const fetchMembershipPlans = async () => {
+            try {
+                const response = await fetch(`https://localhost:7253/api/membershipplans/get`);
+                const data = await response.json();
+                setMembershipPlans(data);
+            } catch (error) {
+                console.error("Error fetching instructors:", error);
+            }
+        };
+        fetchMembershipPlans();
+    }, []);
     useEffect(() => {
         const fetchInstructors = async () => {
             try {
@@ -134,11 +147,13 @@ const MembershipPlans = () => {
             console.log("No existing membership found. Proceeding to select instructor.");
         }
 
+
         setSelectedPlan(plan);
+        console.log(selectedPlan)
         setExistingMembership(null);
         setShowModal(true);
 
-        if (plan.noInstructor) {
+        if (membershipPlans.hasInstructor) {
             setSelectedInstructor(null);
         }
     };
@@ -155,7 +170,7 @@ const MembershipPlans = () => {
         const userId = parseInt(localStorage.getItem("userId"), 10); // Ensure userId is an integer
 
         // For instructor-based memberships, make sure one is selected
-        if (!selectedPlan?.noInstructor && !selectedInstructor) {
+        if (!selectedPlan?.hasInstructor && !selectedInstructor) {
             setNotification({ type: 'error', message: "Please select an instructor!" });
             return;
         }
@@ -171,7 +186,7 @@ const MembershipPlans = () => {
             price: totalPrice,
             membershipType: selectedPlan.name,
             userId: userId,
-            instructorId: selectedPlan.noInstructor ? null : parseInt(selectedInstructor, 10)
+            instructorId: selectedPlan.hasInstructor ? null : parseInt(selectedInstructor, 10)
         };
 
         try {
@@ -213,15 +228,14 @@ const MembershipPlans = () => {
         <div className="plans-container">
             <h1 className="plans-title">Choose Your Membership</h1>
             <div className="plans-grid">
-                {plans.map((plan, index) => (
-                    <div className="plan-card" style={{ backgroundColor: plan.bgColor }} key={index}>
-                        {plan.noInstructor && (
+                {membershipPlans.map((plan, index) => (
+                    <div className="plan-card" key={index}>
+                        {!plan.hasInstructor && (
                             <span className="no-instructor-badge">No Instructor Needed</span>
                         )}
                         <h2>{plan.name}</h2>
                         <p><strong>Price:</strong> ${plan.price}/mo</p>
-                        <p><strong>Instructor Time:</strong> {plan.hoursWithInstructor}</p>
-                        <p><strong>Free Stuff:</strong> {plan.freeStuff}</p>
+                        <p><strong>Description:</strong> {plan.description}</p>
                         <p><strong>Access:</strong> {plan.access}</p>
                         <button className="join-btn" onClick={() => handleJoinNow(plan)}>Join Now</button>
                     </div>
@@ -266,7 +280,7 @@ const MembershipPlans = () => {
                             <>
                                 <h3>Confirm Your Membership: <strong>{selectedPlan.name}</strong></h3>
 
-                                {!selectedPlan?.noInstructor && (
+                                {selectedPlan?.hasInstructor && (
                                     <>
                                         <h4>Select an Instructor</h4>
                                         <select onChange={handleInstructorChange}>
