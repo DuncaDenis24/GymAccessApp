@@ -64,6 +64,7 @@ namespace AuthAPI.Controllers
         public async Task<IActionResult> CancelMembership( int userId)
         {
             var user = await _context.Users
+                .Include(u => u.Membership)
                 .FirstOrDefaultAsync(u => u.User_Id == userId);
 
             if (user == null)
@@ -75,6 +76,10 @@ namespace AuthAPI.Controllers
             {
                 return BadRequest("User doesn't have an active membership.");
             }
+
+            var membership = await _context.Memberships
+                .FirstOrDefaultAsync(m => m.Membership_Id == user.Membership_Id);
+            _context.Memberships.Remove(membership);
 
             user.Membership_Id = null;
             user.Instructor_Id = null;
