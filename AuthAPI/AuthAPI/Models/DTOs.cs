@@ -68,4 +68,16 @@
         public int Duration { get; set; }  // Duration in months
         public int? InstructorId { get; set; }  // Optional Instructor Id
     }
+      public class MembershipPlanDTO
+    {
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public int Price { get; set; }
+
+        public string Access { get; set; }
+
+        public bool HasInstructor { get; set; }
+    }
 }

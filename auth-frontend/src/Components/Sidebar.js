@@ -55,7 +55,6 @@ const Sidebar = () => {
             <div className={`sidebar ${isOpen ? 'open' : ''}`} ref={sidebarRef}>
                 <nav>
                     <ul>
-                        {/* Instructor-only links */}
                         {role === "instructor" && (
                             <>
                                 <li>
@@ -70,7 +69,6 @@ const Sidebar = () => {
                             </>
                         )}
 
-                        {/* User-only link */}
                         {role === "user" && (
                             <>
                                 <li>
@@ -86,6 +84,17 @@ const Sidebar = () => {
                             </>
                         )}
 
+                            {role === "admin" && ( 
+                                <>
+                             <li>
+                                    <Link to="/admin-profile" onClick={handleLinkClick}>Profile</Link>
+                                </li>
+
+                                <li>
+                                    <Link to="/admin-memberships" onClick={handleLinkClick}>Membership Plans</Link>
+                                </li> 
+                                </>
+                        )}
                         <li>
                             <Link to="/settings" onClick={handleLinkClick}>Settings</Link>
                         </li>

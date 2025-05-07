@@ -10,6 +10,8 @@ import MembershipPlans from './Components/MembershipPlans';
 import InstructorProfile from './Components/InstructorProfile';
 import InstructorsClients from './Components/InstructorsClients'
 import Facilities from './Components/Facilities';
+import AdminProfile from './Components/AdminProfile';
+import AdminMemberships from './Components/AdminMembership';
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -51,9 +53,13 @@ const App = () => {
                         user ? (
                             user.role === "instructor" ? (
                                 <Navigate to="/instructor-profile" replace />
-                            ) : (
+                            ) : ( 
+                                    user.role === "user" ? (
                                 <Navigate to="/profile" replace />
-                            )
+                                    ) : (
+                                            <Navigate to="/admin-profile" replace />
+                                    )
+                                )
                         ) : (
                             <Login onLoginSuccess={handleLoginSuccess} />
                         )
@@ -91,8 +97,27 @@ const App = () => {
                         )
                     }
                 />
+                <Route
+                    path="/admin-profile"
+                    element={
+                        user ? (
+                            user.role === "admin" ? (
+                                <AdminProfile
+                                    user={user}
+                                    onLogout={handleLogout}
+                                    onUpdateProfile={handleUpdateProfile}
+                                />
+                            ) : (
+                                <Navigate to="/" replace />
+                            )
+                        ) : (
+                            <Navigate to="/" replace />
+                        )
+                    }
+                />
                 <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/dashboard" replace />} />
                 <Route path="/memberships" element={user ? <MembershipPlans /> : <Navigate to="/memberships" replace />} />
+                <Route path="/admin-memberships" element={user ? <AdminMemberships /> : <Navigate to="/admin-memberships" replace />} />"
                 <Route path="/settings" element={user ? <Settings /> : <Navigate to="/settings" replace />} />
                 <Route path="/instructorsclients" element={user ? <InstructorsClients /> : <Navigate to="/instructorsclients" replace />} />
                 <Route path="/facilities" element={user? <Facilities/> :<Navigate to="/facilities" replace/> } />
