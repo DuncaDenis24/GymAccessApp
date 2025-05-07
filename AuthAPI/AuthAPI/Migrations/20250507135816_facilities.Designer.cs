@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250507135816_facilities")]
+    partial class facilities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,50 +47,6 @@ namespace AuthAPI.Migrations
                     b.HasKey("FacilityId");
 
                     b.ToTable("Facilities");
-
-                    b.HasData(
-                        new
-                        {
-                            FacilityId = 1,
-                            Description = "Equipped with the latest treadmills, bikes, and ellipticals for all your cardio needs.",
-                            ImageUrl = "/images/cardio.jpg",
-                            Title = "Cardio Area"
-                        },
-                        new
-                        {
-                            FacilityId = 2,
-                            Description = "Dumbbells, barbells, and machines to help you grow stronger every day.",
-                            ImageUrl = "/images/weights.jpg",
-                            Title = "Weightlifting Zone"
-                        },
-                        new
-                        {
-                            FacilityId = 3,
-                            Description = "Join a variety of classes from HIIT to yoga with expert instructors.",
-                            ImageUrl = "/images/yoga.jpg",
-                            Title = "Group Classes Studio"
-                        },
-                        new
-                        {
-                            FacilityId = 4,
-                            Description = "Olympic-sized indoor pool available all year round for lap swimming or leisure.",
-                            ImageUrl = "/images/pool.jpg",
-                            Title = "Swimming Pool"
-                        },
-                        new
-                        {
-                            FacilityId = 5,
-                            Description = "Relax and recover in our state-of-the-art sauna and spa facilities.",
-                            ImageUrl = "/images/sauna.jpg",
-                            Title = "Sauna & Spa"
-                        },
-                        new
-                        {
-                            FacilityId = 6,
-                            Description = "Clean and spacious locker rooms with showers, hairdryers, and secure storage.",
-                            ImageUrl = "/images/locker.jpg",
-                            Title = "Locker Rooms"
-                        });
                 });
 
             modelBuilder.Entity("AuthAPI.Models.Instructor", b =>

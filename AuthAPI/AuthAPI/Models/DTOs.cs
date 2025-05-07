@@ -56,6 +56,7 @@
         public string EndDate { get; set; }
         public int Price { get; set; }
         public string MembershipType { get; set; }
+        public int MembershipId { get; set; } // Optional, if you want to specify a plan
 
         public int UserId { get; set; }
         public int? InstructorId { get; set; }
@@ -80,4 +81,11 @@
 
         public bool HasInstructor { get; set; }
     }
+    public class FacilityDto
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ImageUrl { get; set; }
+    }
+
 }

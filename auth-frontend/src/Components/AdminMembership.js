@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/AdminMembershipPlans.css"; // New CSS for styling
+import "../styles/AdminMembershipPlans.css"; 
 import Notification from "./Notification"; 
 
 const AdminMembershipPlans = () => {

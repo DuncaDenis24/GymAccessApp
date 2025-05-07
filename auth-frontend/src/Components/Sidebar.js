@@ -86,13 +86,17 @@ const Sidebar = () => {
 
                             {role === "admin" && ( 
                                 <>
-                             <li>
+                                <li>
                                     <Link to="/admin-profile" onClick={handleLinkClick}>Profile</Link>
                                 </li>
 
                                 <li>
                                     <Link to="/admin-memberships" onClick={handleLinkClick}>Membership Plans</Link>
-                                </li> 
+                                    </li> 
+
+                                <li>
+                                    <Link to="/admin-facilities" onClick={handleLinkClick}>Facilities management</Link>
+                                </li>
                                 </>
                         )}
                         <li>

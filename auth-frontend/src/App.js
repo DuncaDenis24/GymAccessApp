@@ -12,6 +12,7 @@ import InstructorsClients from './Components/InstructorsClients'
 import Facilities from './Components/Facilities';
 import AdminProfile from './Components/AdminProfile';
 import AdminMemberships from './Components/AdminMembership';
+import AdminFacilities from './Components/AdminFacilities';
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -121,6 +122,7 @@ const App = () => {
                 <Route path="/settings" element={user ? <Settings /> : <Navigate to="/settings" replace />} />
                 <Route path="/instructorsclients" element={user ? <InstructorsClients /> : <Navigate to="/instructorsclients" replace />} />
                 <Route path="/facilities" element={user? <Facilities/> :<Navigate to="/facilities" replace/> } />
+                <Route path="/admin-facilities" element={user ? <AdminFacilities /> : <Navigate to="/admin-facilities" replace />} />
             </Routes>
         </Router>
     );

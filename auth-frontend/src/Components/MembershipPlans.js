@@ -3,83 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "../styles/MembershipPlans.css";
 import Notification from './Notification';
-/*
-const plans = [
-    {
-        name: "Starter",
-        price: 19,
-        hoursWithInstructor: "2 hours/week",
-        freeStuff: "Free water bottle",
-        access: "Access from 9 AM to 5 PM (Weekdays)",
-        bgColor: "#e0f7fa",
-        noInstructor: false
-    },
-    {
-        name: "Basic",
-        price: 29,
-        hoursWithInstructor: "4 hours/week",
-        freeStuff: "Water bottle + Gym Towel",
-        access: "Access from 6 AM to 10 PM (Weekdays + Sat)",
-        bgColor: "#c8e6c9",
-        noInstructor: false
-    },
-    {
-        name: "Premium",
-        price: 49,
-        hoursWithInstructor: "6 hours/week",
-        freeStuff: "T-shirt + Supplements Samples",
-        access: "Full-time Access + Sauna",
-        bgColor: "#fff9c4",
-        noInstructor: false
-    },
-    {
-        name: "Pro",
-        price: 69,
-        hoursWithInstructor: "Unlimited sessions",
-        freeStuff: "Complete Gym Kit",
-        access: "24/7 Access + Sauna + Pool",
-        bgColor: "#ffe0b2",
-        noInstructor: false
-    },
-    {
-        name: "Elite",
-        price: 99,
-        hoursWithInstructor: "Personal Trainer Included",
-        freeStuff: "Custom Nutrition Plan + All Gear",
-        access: "VIP Lounge + 24/7 Access + Spa",
-        bgColor: "#f8bbd0",
-        noInstructor: false
-    },
-    {
-        name: "Solo Splash",
-        price: 30,
-        hoursWithInstructor: "No instructor",
-        freeStuff: "Swim Cap + Water Bottle",
-        access: "Access to Pool + Gym (6 AM - 10 PM)",
-        bgColor: "#b3e5fc",
-        noInstructor: true
-    },
-    {
-        name: "Solo Zen",
-        price: 50,
-        hoursWithInstructor: "No instructor",
-        freeStuff: "Yoga Mat + Relaxation Kit",
-        access: "Full Gym + Yoga Studio (Weekdays + Sat)",
-        bgColor: "#ffe0f0",
-        noInstructor: true
-    },
-    {
-        name: "Solo Bliss",
-        price: 70,
-        hoursWithInstructor: "No instructor",
-        freeStuff: "Spa Pass + Premium Locker",
-        access: "Gym + Sauna + Yoga Studio + Pool (Full-Time Access)",
-        bgColor: "#dcedc8",
-        noInstructor: true
-    }
 
-];
-*/
 const MembershipPlans = () => {
     const [instructors, setInstructors] = useState([]);
     const [selectedInstructor, setSelectedInstructor] = useState(null);
@@ -92,7 +16,6 @@ const MembershipPlans = () => {
     const [membershipPlans, setMembershipPlans] = useState([]);
     const navigate = useNavigate();
 
-    // Fetch instructors on component mount
     useEffect(() => {
         const fetchMembershipPlans = async () => {
             try {
@@ -181,6 +104,7 @@ const MembershipPlans = () => {
 
         // Build the payload conditionally
         const membershipData = {
+            membershipId: selectedPlan.membershipId,
             startDate: startDate.toISOString(),
             endDate: endDate.toISOString(),
             price: totalPrice,
