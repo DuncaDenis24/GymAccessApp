@@ -1,0 +1,97 @@
+.admin-manage-instructors {
+    max-width: 90%;
+    width: 100%;
+    margin: 2% auto;
+    padding: 2%;
+    background: linear-gradient(135deg, #f4f8fb 0%, #e9f0f7 100%);
+    border-radius: 1.5em;
+    box-shadow: 0 0.5em 1.5em rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+    .admin-manage-instructors h2 {
+        text-align: center;
+        color: #1a237e;
+        margin-bottom: 2%;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+    }
+
+.instructor-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2%;
+    justify-content: center;
+}
+
+.instructor-card {
+    background: #fff;
+    border-radius: 1em;
+    box-shadow: 0 0.2em 0.8em rgba(25, 118, 210, 0.08);
+    padding: 2em 2em 1.5em 2em;
+    margin-bottom: 2%;
+    width: 100%;
+    max-width: 28em;
+    min-width: 18em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+}
+
+    .instructor-card:hover {
+        box-shadow: 0 0.4em 1.2em rgba(25, 118, 210, 0.15);
+    }
+
+    .instructor-card h3 {
+        margin: 0 0 0.5em 0;
+        color: #1976d2;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .instructor-card p {
+        margin: 0.2em 0;
+        color: #263238;
+        font-size: 1em;
+    }
+
+.btn-delete {
+    margin-top: 1.2em;
+    padding: 0.7em 1.5em;
+    background: linear-gradient(90deg, #e53935 0%, #ff7043 100%);
+    color: #fff;
+    border: none;
+    border-radius: 0.5em;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0.1em 0.3em rgba(229, 57, 53, 0.08);
+}
+
+    .btn-delete:hover {
+        background: linear-gradient(90deg, #b71c1c 0%, #e53935 100%);
+        box-shadow: 0 0.2em 0.6em rgba(229, 57, 53, 0.15);
+    }
+
+.notification {
+    margin-bottom: 2.5%;
+    padding: 2%;
+    border-radius: 0.5em;
+    font-size: 1em;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+    .notification.success {
+        background-color: #e3f7e6;
+        color: #256029;
+        border: 1px solid #b2dfdb;
+    }
+
+    .notification.error {
+        background-color: #fdecea;
+        color: #b71c1c;
+        border: 1px solid #ffcdd2;
+    }

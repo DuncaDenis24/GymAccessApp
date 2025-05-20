@@ -14,6 +14,7 @@ import AdminProfile from './Components/AdminProfile';
 import AdminMemberships from './Components/AdminMembership';
 import AdminFacilities from './Components/AdminFacilities';
 import AdminUserInstructors from './Components/AdminUserInstructors';
+import AdminManageInstructors from './Components/AdminManageInstructors';
 
 const App = () => {
     const [user, setUser] = useState(null);
@@ -125,6 +126,7 @@ const App = () => {
                 <Route path="/facilities" element={user? <Facilities/> :<Navigate to="/facilities" replace/> } />
                 <Route path="/admin-facilities" element={user ? <AdminFacilities /> : <Navigate to="/admin-facilities" replace />} />
                 <Route path="/admin/user-instructors" element={user ? <AdminUserInstructors /> : <Navigate to="/admin/user-instructors" replace />} />
+                <Route path="/admin/managment-instructors" element={user ? <AdminManageInstructors /> : <Navigate to="/admin/managment-instructors" replace />} />
             </Routes>
         </Router>
     );
