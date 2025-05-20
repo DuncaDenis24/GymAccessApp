@@ -96,7 +96,10 @@ const Sidebar = () => {
 
                                 <li>
                                     <Link to="/admin-facilities" onClick={handleLinkClick}>Facilities Management</Link>
-                                </li>
+                                    </li>
+                                <li>
+                                        <Link to="/admin/user-instructors" onClick={handleLinkClick}>Users Managment</Link>
+                                    </li>
                                 </>
                         )}
                         <li>

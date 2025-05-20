@@ -110,8 +110,7 @@ const Login = ({ onLoginSuccess }) => {
                     navigate('/admin-profile');
                 }
                 else {
-                    alert("Login successful!")
-                    //navigate('/profile')
+                    navigate('/profile')
                 }
 
                 resetForm();

@@ -1,4 +1,11 @@
-﻿namespace AuthAPI.Models.DTOs { 
+﻿namespace AuthAPI.Models.DTOs 
+{
+
+    public class UpdateInstructorDto
+    {
+        public int InstructorId { get; set; }
+    }
+
     public class LoginDto
     {
         public string Email { get; set; }

@@ -18,6 +18,42 @@ public class UserController : ControllerBase
         _context = context;
     }
 
+    [HttpGet("getAll")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        try
+        {
+            var users = await _context.Users
+                .Include(u => u.Instructor) // Include Instructor details
+                .Select(u => new
+                {
+                    UserId = u.User_Id,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    Email = u.Email,
+                    Phone = u.Phone,
+                    Photo = u.Photo,
+                    JoinDate = u.JoinDate,
+                    Instructor = u.Instructor != null ? new
+                    {
+                        InstructorId = u.Instructor.Instructor_Id,
+                        Name = u.Instructor.Name,
+                        Surname = u.Instructor.Surname,
+                        Email = u.Instructor.Email,
+                        Phone = u.Instructor.Phone
+                    } : null
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while retrieving users.", error = ex.Message });
+        }
+    }
+
+
     // Endpoint to get user data
     [HttpGet("get/{id}")]
     public async Task<IActionResult> GetUserDetails(int id)
@@ -131,5 +167,41 @@ public class UserController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while deleting the user.", error = ex.Message });
         }
     }
+
+    [HttpPut("updateInstructor/{id}")]
+    public async Task<IActionResult> UpdateUserInstructor(int id, [FromBody] UpdateInstructorDto updateInstructorDto)
+    {
+        try
+        {
+            // Find the user by ID
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = $"User with ID {id} not found." });
+            }
+
+            // Check if the instructor exists
+            var instructor = await _context.Instructors.FindAsync(updateInstructorDto.InstructorId);
+            if (instructor == null)
+            {
+                return NotFound(new { message = $"Instructor with ID {updateInstructorDto.InstructorId} not found." });
+            }
+
+            // Update the user's instructor
+            user.Instructor_Id = updateInstructorDto.InstructorId;
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Instructor updated successfully." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while updating the instructor.", error = ex.Message });
+        }
+    }
+
+
+
 }
 
