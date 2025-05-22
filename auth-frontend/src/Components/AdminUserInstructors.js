@@ -16,6 +16,7 @@ const AdminUserInstructors = () => {
             try {
                 const res = await axios.get('https://localhost:7253/api/user/getAll');
                 setUsers(res.data);
+                console.log('Fetched Users:', res.data); // Debugging
             } catch (err) {
                 console.error('Failed to fetch users:', err.response || err.message);
                 setNotification({ type: 'error', message: 'Failed to load users' });

@@ -119,14 +119,24 @@ public class InstructorController : ControllerBase
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteInstructor(int id)
     {
-        var instructor = await _context.Instructors.FindAsync(id);
+        // Check if the instructor exists
+        var instructor = await _context.Instructors
+            .Include(i => i.Users)
+            .FirstOrDefaultAsync(i => i.Instructor_Id == id);
 
         if (instructor == null)
             return NotFound(new { message = "Instructor not found." });
+
+        // Check if the instructor has any assigned clients
+        if (instructor.Users != null && instructor.Users.Any())
+        {
+            return BadRequest(new { message = "Cannot delete instructor with assigned clients." });
+        }
 
         _context.Instructors.Remove(instructor);
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Instructor deleted successfully." });
     }
+
 }

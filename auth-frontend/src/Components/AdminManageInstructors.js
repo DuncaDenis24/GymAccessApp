@@ -27,7 +27,8 @@ const AdminManageInstructors = () => {
             setNotification({ type: 'success', message: 'Instructor deleted successfully' });
             fetchInstructors();
         } catch (err) {
-            setNotification({ type: 'error', message: 'Failed to delete instructor' });
+            const msg = err.response?.data?.message || 'Failed to delete instructor';
+            setNotification({ type: 'error', message: msg });
         }
     };
 

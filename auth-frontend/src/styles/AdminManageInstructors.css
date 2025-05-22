@@ -35,7 +35,9 @@
     min-width: 18em;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     transition: box-shadow 0.2s;
 }
 
@@ -48,12 +50,16 @@
         color: #1976d2;
         font-size: 1.2em;
         font-weight: 600;
+        text-align: center;
+        align-self: center;
     }
 
     .instructor-card p {
         margin: 0.2em 0;
         color: #263238;
         font-size: 1em;
+        text-align: center;
+        align-self: center;
     }
 
 .btn-delete {
@@ -68,6 +74,9 @@
     cursor: pointer;
     transition: background 0.2s, box-shadow 0.2s;
     box-shadow: 0 0.1em 0.3em rgba(229, 57, 53, 0.08);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
     .btn-delete:hover {
